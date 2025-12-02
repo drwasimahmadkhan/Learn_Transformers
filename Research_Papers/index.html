@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attention Is All You Need - References</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --transition: all 0.3s ease;
+
+            /* Section Colors */
+            --summary-bg: #f0f9ff;
+            --summary-border: #0ea5e9;
+            --why-bg: #fff7ed;
+            --why-border: #f97316;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Header - Unfixed as requested */
+        header {
+            background-color: var(--card-bg);
+            padding: 3rem 5%;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            /* Changed from sticky */
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--text-main);
+            text-align: center;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .btn {
+            padding: 0.875rem 1.75rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+            background-color: white;
+            color: var(--text-main);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            color: white;
+        }
+
+        .search-container {
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1.25rem 1.5rem;
+            padding-left: 3.5rem;
+            border-radius: 1rem;
+            border: 2px solid var(--border-color);
+            background-color: white;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Main Grid */
+        main {
+            max-width: 1400px;
+            margin: 0 auto 4rem;
+            padding: 0 5%;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        @media (min-width: 1200px) {
+            .grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 1.25rem;
+            padding: 1.75rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-color);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .year-badge {
+            background-color: #eff6ff;
+            color: var(--primary-color);
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: auto;
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background-color: white;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            border-radius: 2rem;
+            padding: 3rem;
+            position: relative;
+            transform: scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: #f1f5f9;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            background-color: #e2e8f0;
+            color: var(--text-main);
+            transform: rotate(90deg);
+        }
+
+        .modal-header {
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 2rem;
+        }
+
+        .modal-meta {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .modal-title {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.2;
+        }
+
+        .content-grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        /* Distinct Section Styling */
+        .info-box {
+            padding: 2rem;
+            border-radius: 1rem;
+            border-left: 6px solid;
+        }
+
+        .summary-box {
+            background-color: var(--summary-bg);
+            border-left-color: var(--summary-border);
+        }
+
+        .why-box {
+            background-color: var(--why-bg);
+            border-left-color: var(--why-border);
+        }
+
+        .info-box h3 {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .summary-box h3 {
+            color: #0369a1;
+        }
+
+        .why-box h3 {
+            color: #c2410c;
+        }
+
+        .modal-text {
+            font-size: 1.15rem;
+            color: var(--text-main);
+            line-height: 1.8;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+        }
+
+        /* Section Colors */
+        .tag-intro {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .tag-background {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .tag-arch {
+            background-color: #fce7f3;
+            color: #9d174d;
+        }
+
+        .tag-why {
+            background-color: #ffedd5;
+            color: #9a3412;
+        }
+
+        .tag-training {
+            background-color: #f3e8ff;
+            color: #6b21a8;
+        }
+
+        .tag-results {
+            background-color: #e0f2fe;
+            color: #075985;
+        }
+
+        /* Professional Back to Home Button */
+        .home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Attention Is All You Need</h1>
+
+            <div class="controls">
+                <a href="./Old Paper.pdf" target="_blank" class="btn">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Old Version
+                </a>
+                <a href="./New Paper.pdf" target="_blank" class="btn">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    New Version
+                </a>
+                <a href="./AttentionAllYouNeedHighlighted.pdf" target="_blank" class="btn btn-primary">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                        </path>
+                    </svg>
+                    Highlighted Paper
+                </a>
+            </div>
+
+            <div class="search-container">
+                <svg class="search-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input type="text" class="search-input" placeholder="Search references by title, year, or section..."
+                    id="searchInput">
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="grid" id="referenceGrid">
+            <!-- Cards will be injected here by JS -->
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <div class="modal-header">
+                <div class="modal-meta">
+                    <span class="year-badge" id="modalYear">2017</span>
+                    <div class="tags" id="modalTags"></div>
+                </div>
+                <h2 class="modal-title" id="modalTitle">Paper Title</h2>
+            </div>
+
+            <div class="content-grid">
+                <div class="info-box summary-box">
+                    <h3>
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                        Paper Summary
+                    </h3>
+                    <p class="modal-text" id="modalSummary">Summary text goes here...</p>
+                </div>
+
+                <div class="info-box why-box">
+                    <h3>
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        Why It's Needed
+                    </h3>
+                    <p class="modal-text" id="modalWhy">Explanation goes here...</p>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <a href="#" id="modalLink" target="_blank" class="btn btn-primary">
+                    Read Full Paper
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        style="margin-left: 0.5rem;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Source
+        const references = [
+            {
+                id: "01",
+                year: "2016",
+                title: "Layer Normalization",
+                file: "./01_2016_Layer Normalization.pdf",
+                sections: ["Model Architecture"],
+                summary: "This paper introduces Layer Normalization, a technique designed to normalize the activities of neurons within a layer. Unlike Batch Normalization, which depends on the mini-batch size, Layer Norm computes the mean and variance from the summed inputs to the neurons in a layer on a single training case. This makes it particularly effective for Recurrent Neural Networks and models where batch sizes may vary or be small.",
+                why: "In the Transformer architecture, Layer Normalization is a critical component for stabilizing training. It is applied after each sub-layer (Self-Attention and Feed-Forward Networks) along with residual connections. Without Layer Norm, the deep Transformer model would suffer from covariate shift and vanishing/exploding gradients, making convergence extremely difficult or impossible."
+            },
+            {
+                id: "02",
+                year: "2016",
+                title: "Neural Machine Translation by Jointly Learning to Align and Translate",
+                file: "./02_2016_ NEURAL MACHINE TRANSLATION  BY JOINTLY LEARNING TO ALIGN AND TRANSLATE.pdf",
+                sections: ["Introduction", "Model Architecture"],
+                summary: "This seminal paper introduces the concept of 'attention' in Neural Machine Translation (NMT). It proposes an architecture where the model automatically searches for parts of a source sentence that are relevant to predicting a target word. Instead of encoding the entire source sentence into a single fixed-length vector, the model learns to 'align' and 'translate' jointly by focusing on different parts of the input sequence at each decoding step.",
+                why: "This is the foundational paper for the entire attention mechanism. The Transformer takes the core idea of this paper—that attention allows for flexible, context-aware processing—and pushes it to its limit by removing the recurrent layers entirely. The Transformer relies solely on this attention mechanism to model dependencies, making this reference the conceptual ancestor of the 'Attention Is All You Need' paper."
+            },
+            {
+                id: "03",
+                year: "2017",
+                title: "Massive Exploration of Neural Machine Translation Architectures",
+                file: "./03_2017_Massive Exploration of Neural Machine Translation Architectures.pdf",
+                sections: ["Model Architecture", "Training"],
+                summary: "This paper presents a large-scale empirical study of various Neural Machine Translation architectures. It systematically explores hyperparameters such as embedding size, number of layers, cell types, and regularization techniques to determine what factors contribute most to model performance. It serves as a comprehensive guide to the 'best practices' for building NMT systems at the time.",
+                why: "The Transformer's design was not arbitrary; it was informed by the rigorous experimentation found in this paper. Specifically, the choices for layer sizes, dropout rates, and other regularization hyperparameters in the Transformer were guided by the insights from this massive exploration. It provided the experimental baseline that allowed the Transformer authors to tune their model for optimal performance."
+            },
+            {
+                id: "04",
+                year: "2016",
+                title: "Long Short-Term Memory-Networks for Machine Reading",
+                file: "./04_2016_Long Short-Term Memory-Networks for Machine Reading.pdf",
+                sections: ["Background"],
+                summary: "This work explores the application of Long Short-Term Memory (LSTM) networks to machine reading and natural language understanding tasks. It demonstrates how LSTMs can be used to process long sequences of text to extract meaning and answer questions, highlighting the state-of-the-art capabilities of recurrent models before the Transformer era.",
+                why: "This reference is cited to establish the background of sequence modeling. It illustrates the dominance and capabilities of LSTM-based approaches for handling long-range dependencies. The Transformer paper uses this as a point of comparison to show how self-attention can achieve similar or better understanding of long sequences but with significantly greater computational efficiency and parallelization."
+            },
+            {
+                id: "05",
+                year: "2014",
+                title: "Learning Phrase Representations using RNN Encoder–Decoder for Statistical Machine Translation",
+                file: "./05_2014_Learning Phrase Representations using RNN Encoder–Decoder  for Statistical Machine Translation.pdf",
+                sections: ["Introduction", "Model Architecture"],
+                summary: "This paper proposes the RNN Encoder-Decoder architecture, a framework that became the standard for NMT. One RNN (the encoder) processes the input sequence into a fixed-length vector representation, and another RNN (the decoder) generates the output sequence from that representation. It also introduced the Gated Recurrent Unit (GRU), a simplified variant of the LSTM.",
+                why: "The Transformer adopts the high-level Encoder-Decoder structure established by this paper. While the Transformer replaces the internal RNN layers with self-attention and feed-forward layers, the overall paradigm of encoding a source sequence into a representation and then decoding it remains the same. This paper defined the structural blueprint that the Transformer optimizes."
+            },
+            {
+                id: "06",
+                year: "2016",
+                title: "Xception: Deep Learning with Depthwise Separable Convolutions",
+                file: "./06_2016_Xception Deep Learning with Depthwise Separable Convolutions.pdf",
+                sections: ["Why Self Attention"],
+                summary: "This paper introduces the Xception architecture, which is based on the Inception family but replaces Inception modules with depthwise separable convolutions. It shows that separating spatial correlations from cross-channel correlations can lead to more efficient and powerful models for computer vision tasks.",
+                why: "The Transformer authors cite this paper to draw an interesting parallel between separable convolutions and their Multi-Head Attention mechanism. Just as separable convolutions split computation across spatial and channel dimensions, Multi-Head Attention splits the attention mechanism across different 'heads' (subspaces). This comparison helps justify the efficiency and effectiveness of the multi-head design."
+            },
+            {
+                id: "07",
+                year: "2014",
+                title: "Empirical Evaluation of Gated Recurrent Neural Networks on Sequence Modeling",
+                file: "./07_2014_Empirical Evaluation of Gated Recurrent Neural Networks  on Sequence Modeling.pdf",
+                sections: ["Background"],
+                summary: "This paper provides a rigorous comparison between different types of gated recurrent units, specifically the LSTM and the GRU. It evaluates their performance on various sequence modeling tasks to understand the trade-offs between model complexity and performance.",
+                why: "Cited in the background section, this paper helps define the landscape of recurrent models that the Transformer aims to supersede. By understanding the limitations and performance characteristics of Gated RNNs, the authors motivate the need for a new architecture that avoids the sequential processing constraints inherent in these recurrent models."
+            },
+            {
+                id: "08",
+                year: "2017",
+                title: "Convolutional Sequence to Sequence Learning",
+                file: "./08_2017_Convolutional Sequence to Sequence Learning.pdf",
+                sections: ["Results"],
+                summary: "This paper proposes a fully convolutional architecture for sequence-to-sequence learning. Unlike RNNs, which process data sequentially, this model uses Convolutional Neural Networks (CNNs) to process the input, allowing for parallelization over the sequence length and faster training.",
+                why: "This was a key competitor to the Transformer. It represented the state-of-the-art in non-recurrent approaches at the time. The Transformer paper compares its results directly against this convolutional model to demonstrate that self-attention is not only more efficient than recurrence but also outperforms convolutional approaches in capturing long-range dependencies and overall translation quality."
+            },
+            {
+                id: "09",
+                year: "2014",
+                title: "Generating Sequences With Recurrent Neural Networks",
+                file: "./09_2014_Generating Sequences With Recurrent Neural Networks.pdf",
+                sections: ["Background", "Model Architecture", "Results"],
+                summary: "This paper demonstrates the powerful capability of Long Short-Term Memory (LSTM) networks to generate complex sequences, such as text and handwriting. It showed that LSTMs could learn to predict the next data point in a sequence with high accuracy, effectively 'hallucinating' coherent data.",
+                why: "This is a foundational text for sequence generation. It established the baseline capabilities of neural networks to generate coherent sequential data. The Transformer builds upon this goal but achieves it using a radically different mechanism (self-attention) that allows it to 'look back' at the entire sequence history simultaneously rather than relying on a compressed hidden state."
+            },
+            {
+                id: "10",
+                year: "2015",
+                title: "Deep Residual Learning for Image Recognition",
+                file: "./10_2015_Deep Residual Learning for Image Recognition.pdf",
+                sections: ["Model Architecture"],
+                summary: "This breakthrough paper introduces Residual Networks (ResNets). It solves the problem of vanishing gradients in very deep networks by introducing 'skip connections' or 'shortcuts' that allow the gradient to flow directly through the network. This allowed for the training of networks with hundreds of layers.",
+                why: "The Transformer directly adopts the residual connection mechanism. Every sub-layer in the Transformer (the attention mechanism and the feed-forward network) is surrounded by a residual connection followed by layer normalization. This architectural choice is crucial; without it, the Transformer would be unable to stack multiple layers effectively, limiting its capacity to learn complex patterns."
+            },
+            {
+                id: "11",
+                year: "2015",
+                title: "Deep Residual Learning for Image Recognition (Duplicate)",
+                file: "./11_2015_Deep Residual Learning for Image Recognition.pdf",
+                sections: ["Model Architecture"],
+                summary: "This is a duplicate reference to the seminal ResNet paper. It reinforces the concept of residual learning, where layers learn residual functions with reference to the layer inputs, rather than learning unreferenced functions.",
+                why: "Its presence reinforces the absolute necessity of residual connections in modern deep learning architectures, including the Transformer. It ensures that information can propagate through the deep stack of attention layers without being lost or distorted."
+            },
+            {
+                id: "12",
+                year: "2001",
+                title: "Gradient Flow in Recurrent Nets: The Difficulty of Learning Long-Term Dependencies",
+                file: "./12_2001_Gradient Flow in Recurrent Nets the Difficulty of Learning Long-Term Dependencies.pdf",
+                sections: ["Background", "Why Self Attention"],
+                summary: "This classic paper analyzes the mathematical difficulties involved in training Recurrent Neural Networks. It explains the 'vanishing gradient' and 'exploding gradient' problems, which make it extremely hard for standard RNNs to learn dependencies between events that are far apart in time.",
+                why: "This paper highlights the fundamental problem that the Transformer solves. By using self-attention, the Transformer reduces the path length between any two positions in the sequence to a constant O(1). This completely bypasses the long-term dependency problem described in this paper, allowing the model to relate distant words just as easily as adjacent ones."
+            },
+            {
+                id: "13",
+                year: "2016",
+                title: "Exploring the Limits of Language Modeling",
+                file: "./13_2016_Exploring the Limits of Language Modeling.pdf",
+                sections: ["Introduction", "Background"],
+                summary: "This paper investigates large-scale language modeling using the massive 1 Billion Word Benchmark. It pushes the limits of LSTM-based models, training them on huge datasets to see how well they can scale and what performance they can achieve.",
+                why: "This reference sets the stage for the scale of the problem. It shows the computational cost and complexity required to scale RNNs to large datasets. The Transformer is presented as a solution that scales much better computationally, allowing for training on even larger datasets with faster convergence compared to the LSTM limits explored here."
+            },
+            {
+                id: "14",
+                year: "2016",
+                title: "Neural GPUs Learn Algorithms",
+                file: "./14_2016_ NEURAL GPUS LEARN ALGORITHMS.pdf",
+                sections: ["Background"],
+                summary: "This paper proposes the Neural GPU, a highly parallel architecture capable of learning algorithmic tasks like binary multiplication and sorting. It was an early attempt to create a neural network that could perform computation in a parallel, efficient manner similar to a GPU.",
+                why: "The Neural GPU is cited as a predecessor in the quest for parallel sequence processing. While it showed promise for algorithmic tasks, it was less effective for natural language. The Transformer achieves the parallelization goal of the Neural GPU but applies it successfully to the domain of NLP through the self-attention mechanism."
+            },
+            {
+                id: "15",
+                year: "2017",
+                title: "Neural Machine Translation in Linear Time",
+                file: "./15_2017_Neural Machine Translation in Linear Time.pdf",
+                sections: ["Introduction"],
+                summary: "This paper introduces ByteNet, a neural machine translation model that runs in time linear to the sequence length. It uses dilated convolutions to capture dependencies, allowing for parallelization that RNNs cannot achieve.",
+                why: "ByteNet is a direct competitor in terms of efficiency. The Transformer compares itself to ByteNet, noting that while ByteNet has a path length that grows logarithmically with sequence distance, the Transformer has a constant path length. This makes the Transformer theoretically better at capturing very long-range dependencies."
+            },
+            {
+                id: "16",
+                year: "2017",
+                title: "Structured Attention Networks",
+                file: "./16_2017_STRUCTURED ATTENTION NETWORKS.pdf",
+                sections: ["Background"],
+                summary: "This paper extends standard attention mechanisms to model complex structural dependencies in the input, such as syntactic trees or graphs. It represents a move towards more sophisticated forms of attention that go beyond simple sequence alignment.",
+                why: "This reference provides context on the evolution of attention. It shows that researchers were already exploring ways to make attention more powerful and structured. The Transformer simplifies this by showing that a simple, unstructured self-attention mechanism, when stacked deeply, can implicitly learn these structures without needing them to be hard-coded."
+            },
+            {
+                id: "17",
+                year: "2017",
+                title: "Adam: A Method for Stochastic Optimization",
+                file: "./17_2017_ ADAM A METHOD FOR STOCHASTIC OPTIMIZATION.pdf",
+                sections: ["Introduction", "Background"],
+                summary: "This paper introduces Adam (Adaptive Moment Estimation), an optimization algorithm that combines the advantages of two other extensions of stochastic gradient descent: AdaGrad and RMSProp. It computes adaptive learning rates for each parameter.",
+                why: "Adam is the engine under the hood of the Transformer. The paper explicitly states that the model was trained using the Adam optimizer. Its ability to handle sparse gradients and non-stationary objectives made it the perfect choice for training the complex, multi-parameter Transformer architecture."
+            },
+            {
+                id: "18",
+                year: "2018",
+                title: "Factorization Tricks for LSTM Networks",
+                file: "./18_2018_FACTORIZATION TRICKS FOR LSTM NETWORKS.pdf",
+                sections: ["Background", "Why Self Attention"],
+                summary: "This paper proposes matrix factorization techniques to reduce the number of parameters and computational cost of LSTM networks. It aims to make LSTMs more efficient without significantly sacrificing performance.",
+                why: "This is cited to discuss the efficiency landscape. While this paper tries to optimize the existing RNN architecture, the Transformer argues for a complete architectural shift. It serves as a benchmark for the kinds of efficiency gains researchers were trying to squeeze out of RNNs, which the Transformer leapfrogs by abandoning recurrence."
+            },
+            {
+                id: "19",
+                year: "2017",
+                title: "A Structured Self-Attentive Sentence Embedding",
+                file: "./19_2017_A STRUCTURED SELF-ATTENTIVE SENTENCE EMBEDDING.pdf",
+                sections: ["Introduction"],
+                summary: "This paper introduces a self-attention mechanism to generate sentence embeddings. It allows the model to weigh the importance of different words in a sentence when creating a single vector representation, and it includes a regularization term to encourage diversity in the attention weights.",
+                why: "This is one of the key precursors to the Transformer. It explicitly uses the term 'self-attention' and demonstrates its utility for representation learning. The Transformer expands this concept from a simple embedding tool to the core building block of a sequence-to-sequence generator."
+            },
+            {
+                id: "20",
+                year: "2017",
+                title: "Adam: A Method for Stochastic Optimization (Duplicate)",
+                file: "./20_2017_ ADAM A METHOD FOR STOCHASTIC OPTIMIZATION.pdf",
+                sections: ["Training"],
+                summary: "This is a duplicate reference for the Adam optimizer. It details the update rules and hyperparameters (beta1, beta2, epsilon) used to train deep learning models effectively.",
+                why: "Re-emphasizes the role of the Adam optimizer in the successful training of the Transformer. The specific hyperparameters used for Adam in the Transformer paper (beta1=0.9, beta2=0.98, epsilon=10^-9) are critical for reproducing the results."
+            },
+            {
+                id: "21",
+                year: "2015",
+                title: "Effective Approaches to Attention-based Neural Machine Translation",
+                file: "./21_2015_Effective Approaches to Attention-based Neural Machine Translation.pdf",
+                sections: ["Introduction"],
+                summary: "This paper refines the original attention mechanism by introducing 'Global' and 'Local' attention. It explores different alignment functions (dot, general, concat) and shows that a simple dot-product attention can be very effective.",
+                why: "The Transformer utilizes the 'dot-product' attention mechanism discussed in this paper. However, the Transformer scales it by dividing by the square root of the dimension (Scaled Dot-Product Attention) to prevent gradients from vanishing in the softmax function, a refinement directly inspired by the findings here."
+            },
+            {
+                id: "22",
+                year: "2016",
+                title: "A Decomposable Attention Model for Natural Language Inference",
+                file: "./22_2016_ADecomposable Attention Model for Natural Language Inference.pdf",
+                sections: ["Background"],
+                summary: "This paper proposes a model for Natural Language Inference (NLI) that relies almost entirely on attention mechanisms to decompose the problem into subproblems. It demonstrates that complex reasoning tasks can be solved without any recurrent or convolutional layers.",
+                why: "This is a major inspiration for the 'Attention Is All You Need' philosophy. It showed that a model could achieve state-of-the-art results on a difficult task using *only* attention. The Transformer takes this proof-of-concept and scales it up to the much harder task of Machine Translation."
+            },
+            {
+                id: "23",
+                year: "2017",
+                title: "A Deep Reinforced Model for Abstractive Summarization",
+                file: "./23_2017_A DEEP REINFORCED MODEL FOR ABSTRACTIVE SUMMARIZATION.pdf",
+                sections: ["Introduction"],
+                summary: "This paper presents a model for abstractive text summarization that uses a combination of attention mechanisms and reinforcement learning. It addresses the issue of repeating phrases in generated summaries.",
+                why: "Cited to demonstrate the versatility of attention-based models. It shows that attention mechanisms were becoming the standard for a wide variety of sequence-to-sequence tasks, not just translation, paving the way for a unified architecture like the Transformer."
+            },
+            {
+                id: "24",
+                year: "2017",
+                title: "Using the Output Embedding to Improve Language Models",
+                file: "./24_2017_Using the Output Embedding to Improve Language Models.pdf",
+                sections: ["Introduction"],
+                summary: "This paper demonstrates that the input embedding matrix and the output projection matrix (the layer before the softmax) in a language model can be shared (tied). This significantly reduces the number of parameters and improves performance.",
+                why: "The Transformer adopts this weight-tying strategy. It shares the same weight matrix between the input embedding layers of both the encoder and decoder, and the pre-softmax linear transformation. This reduces the model size and acts as a form of regularization."
+            },
+            {
+                id: "25",
+                year: "2016",
+                title: "Neural Machine Translation of Rare Words with Subword Units",
+                file: "./25_2016_Neural Machine Translation of Rare Words with Subword Units.pdf",
+                sections: ["Results"],
+                summary: "This paper introduces Byte Pair Encoding (BPE) to Neural Machine Translation. It addresses the 'rare word' problem by breaking words down into subword units, allowing the model to translate unseen words by translating their parts.",
+                why: "The Transformer uses subword tokenization (specifically BPE or similar) for its input processing. This is essential for handling the open vocabulary of natural language and ensures the model isn't limited to a fixed dictionary of words."
+            },
+            {
+                id: "26",
+                year: "2017",
+                title: "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer",
+                file: "./26_2017_OUTRAGEOUSLY LARGE NEURAL NETWORKS THE SPARSELY-GATED MIXTURE-OF-EXPERTS LAYER.pdf",
+                sections: ["Introduction"],
+                summary: "This paper proposes a Mixture-of-Experts (MoE) layer that allows neural networks to have billions of parameters while only using a fraction of them for each input (conditional computation). It is a technique for massive scaling.",
+                why: "Cited in the context of model scaling and computational efficiency. While the original Transformer is a dense model (activates all parameters), the discussion of MoE highlights the field's direction towards larger, more capable models, which the Transformer architecture eventually facilitated (e.g., Switch Transformer)."
+            },
+            {
+                id: "27",
+                year: "2016",
+                title: "A Decomposable Attention Model for Natural Language Inference (Duplicate)",
+                file: "./27_2016_ADecomposable Attention Model for Natural Language Inference.pdf",
+                sections: ["Introduction", "Background"],
+                summary: "A duplicate reference to the Decomposable Attention Model paper. It reiterates the success of attention-only architectures for NLI tasks.",
+                why: "Serves as further evidence that recurrence is not strictly necessary for understanding natural language, supporting the Transformer's design philosophy."
+            },
+            {
+                id: "28",
+                year: "2015",
+                title: "End-To-End Memory Networks",
+                file: "./28_2015_End-To-End Memory Networks.pdf",
+                sections: ["Background"],
+                summary: "This paper introduces Memory Networks, which have a recurrent attention mechanism that reads from a large external memory multiple times before outputting a response. It showed how multiple 'hops' of attention could reason over data.",
+                why: "The concept of multiple 'hops' in Memory Networks is conceptually similar to the multiple layers of attention in the Transformer. The Transformer can be seen as a Memory Network where the memory is the sequence itself, and it performs multiple hops of reasoning via its stacked layers."
+            },
+            {
+                id: "29",
+                year: "2014",
+                title: "Sequence to Sequence Learning with Neural Networks",
+                file: "./29_2014_Sequence to Sequence Learningwith Neural Networks.pdf",
+                sections: ["Results"],
+                summary: "This is the foundational paper for Sequence-to-Sequence (Seq2Seq) learning. It showed that a multilayered LSTM could map an input sequence to a vector of fixed dimensionality, and then another deep LSTM could decode the target sequence from the vector.",
+                why: "This paper defined the problem space and the baseline architecture (Seq2Seq with LSTM) that the Transformer was designed to revolutionize. It is the standard against which all subsequent NMT models, including the Transformer, are measured."
+            },
+            {
+                id: "30",
+                year: "2015",
+                title: "Rethinking the Inception Architecture for Computer Vision",
+                file: "./30_2015_Rethinking the Inception Architecture for Computer Vision.pdf",
+                sections: ["Model Architecture"],
+                summary: "This paper refines the Inception architecture for computer vision. Crucially, it introduces 'Label Smoothing', a regularization mechanism that prevents the model from predicting too confidently, which helps generalization.",
+                why: "The Transformer adopts Label Smoothing during training. Even though it hurts perplexity (because the model is less confident), the authors found that it improves accuracy and BLEU scores. This technique was directly borrowed from this computer vision paper."
+            },
+            {
+                id: "31",
+                year: "2016",
+                title: "Google’s Neural Machine Translation System",
+                file: "./31_2016_Google’s Neural Machine Translation System Bridging the Gapbetween Human and Machine Translation.pdf",
+                sections: ["Why Self Attention"],
+                summary: "This paper describes GNMT, Google's production NMT system. It was a massive, deep LSTM-based model with 8 encoder and 8 decoder layers, using residual connections and attention. It represented the absolute peak of RNN-based translation.",
+                why: "GNMT was the Goliath to the Transformer's David. It was the primary baseline to beat. The Transformer paper shows that it can match or exceed the quality of this massive, computationally expensive system with a model that is much faster to train and cheaper to run."
+            },
+            {
+                id: "32",
+                year: "2016",
+                title: "Deep Recurrent Models with Fast-Forward Connections",
+                file: "./32_2016_Deep Recurrent Models with Fast-Forward Connections for Neural Machine Translation.pdf",
+                sections: ["Introduction"],
+                summary: "This paper explores the use of 'fast-forward' (residual) connections in deep Recurrent Neural Networks. It showed that these connections allowed for the training of much deeper RNNs than was previously possible.",
+                why: "This work contributed to the understanding of how to train deep networks for sequence tasks. The Transformer integrates this insight by using residual connections around every single sub-layer, allowing it to scale to 6, 12, or even more layers without degradation."
+            },
+            {
+                id: "33",
+                year: "2014",
+                title: "Dropout: A Simple Way to Prevent Neural Networks from Overfitting",
+                file: "./33_2014_Dropout A Simple Way to Prevent Neural Networks from Overfitting.pdf",
+                sections: ["Training"],
+                summary: "This paper introduces Dropout, a powerful regularization technique where units are randomly 'dropped' (set to zero) during training. This prevents units from co-adapting too much and forces the network to learn robust features.",
+                why: "The Transformer uses Dropout extensively. It is applied to the output of each sub-layer before it is added to the residual input, and also to the sums of the embeddings and positional encodings. It is a key factor in preventing the Transformer from overfitting to the training data."
+            },
+            {
+                id: "34",
+                year: "2015",
+                title: "End-To-End Memory Networks (Duplicate)",
+                file: "./34_2015_End-To-End Memory Networks.pdf",
+                sections: ["Background"],
+                summary: "Duplicate reference to Memory Networks. It reinforces the idea of using attention mechanisms to access information from a memory bank (or the input sequence) over multiple steps.",
+                why: "Provides additional context on the lineage of attention-based reasoning models."
+            },
+            {
+                id: "35",
+                year: "2014",
+                title: "Sequence to Sequence Learning with Neural Networks (Duplicate)",
+                file: "./35_2014_Sequence to Sequence Learning with neural networks.pdf",
+                sections: ["Introduction", "Model Architecture"],
+                summary: "Duplicate reference to the Seq2Seq LSTM paper. It serves as the fundamental definition of the sequence transduction task.",
+                why: "Re-establishes the baseline architecture that the Transformer aims to replace."
+            },
+            {
+                id: "36",
+                year: "2016",
+                title: "Rethinking the Inception Architecture for Computer Vision (Duplicate)",
+                file: "./36_2016_Rethinking the Inception Architecture for Computer Vision.pdf",
+                sections: ["Training"],
+                summary: "Duplicate reference for Label Smoothing. It details the mathematical formulation of the regularization technique used in the Transformer's loss function.",
+                why: "Ensures credit is given for the specific regularization technique (Label Smoothing) employed."
+            },
+            {
+                id: "37",
+                year: "2015",
+                title: "Grammar as a Foreign Language",
+                file: "./37_2015_ GRAMMARAS A FOREIGNLANGUAGE.pdf",
+                sections: ["Results"],
+                summary: "This paper applies attention-based Seq2Seq models to the task of syntactic constituency parsing. It treats parsing as a translation problem, where the input is a sentence and the output is the linearized parse tree.",
+                why: "The Transformer paper uses this task to demonstrate the model's generalization capabilities. By achieving state-of-the-art results on constituency parsing with the same architecture used for translation, the authors prove that the Transformer is a general-purpose sequence learner, not just a translation machine."
+            },
+            {
+                id: "38",
+                year: "2016",
+                title: "Google’s Neural Machine Translation System (Duplicate)",
+                file: "./38_2016_Google’s Neural Machine Translation System Bridging the Gapbetween Human and Machine Translation.pdf",
+                sections: ["Introduction", "Model Architecture", "Why Self Attention", "Results"],
+                summary: "Duplicate reference to the GNMT system. It is cited multiple times because it serves as the benchmark for architecture, training scale, and final results.",
+                why: "The ultimate standard of comparison. Every aspect of the Transformer—speed, quality, training cost—is measured against this system."
+            },
+            {
+                id: "39",
+                year: "2016",
+                title: "Deep Recurrent Models with Fast-Forward Connections (Duplicate)",
+                file: "./39_2016_Deep Recurrent Models with Fast-Forward Connections for Neural Machine Translation.pdf",
+                sections: ["Model Architecture"],
+                summary: "Duplicate reference regarding deep RNNs and residual connections.",
+                why: "Reinforces the importance of residual connections for training deep sequence models."
+            },
+            {
+                id: "40",
+                year: "2013",
+                title: "Fast and Accurate Shift-Reduce Constituent Parsing",
+                file: "./40_2013_Fast and Accurate Shift-Reduce Constituent Parsing.pdf",
+                sections: ["Model Architecture"],
+                summary: "This paper presents a fast and accurate shift-reduce parser for constituency parsing. It represents a strong non-neural (or early neural) baseline for the parsing task.",
+                why: "Used as a baseline comparison for the constituency parsing results. The Transformer compares its performance against this specialized parser to show its competence in structural NLP tasks."
+            }
+        ];
+
+        // DOM Elements
+        const grid = document.getElementById('referenceGrid');
+        const searchInput = document.getElementById('searchInput');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalYear = document.getElementById('modalYear');
+        const modalTags = document.getElementById('modalTags');
+        const modalSummary = document.getElementById('modalSummary');
+        const modalWhy = document.getElementById('modalWhy');
+        const modalLink = document.getElementById('modalLink');
+
+        // Render Functions
+        function getSectionClass(section) {
+            const map = {
+                "Introduction": "tag-intro",
+                "Background": "tag-background",
+                "Model Architecture": "tag-arch",
+                "Why Self Attention": "tag-why",
+                "Training": "tag-training",
+                "Results": "tag-results"
+            };
+            return map[section] || "tag-intro";
+        }
+
+        function renderCard(ref, index) {
+            const delay = index * 30; // Stagger animation
+            const tagsHtml = ref.sections.map(sec =>
+                `<span class="tag ${getSectionClass(sec)}">${sec}</span>`
+            ).join('');
+
+            return `
+                <div class="card" onclick="openModal('${ref.id}')" style="animation-delay: ${delay}ms">
+                    <div class="card-header">
+                        <span class="year-badge">${ref.year}</span>
+                    </div>
+                    <h3 class="card-title">${ref.title}</h3>
+                    <div class="tags">
+                        ${tagsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderGrid(data) {
+            grid.innerHTML = data.map((ref, index) => renderCard(ref, index)).join('');
+        }
+
+        // Search Functionality
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = references.filter(ref =>
+                ref.title.toLowerCase().includes(term) ||
+                ref.year.includes(term) ||
+                ref.sections.some(s => s.toLowerCase().includes(term))
+            );
+            renderGrid(filtered);
+        });
+
+        // Modal Functionality
+        window.openModal = function (id) {
+            const ref = references.find(r => r.id === id);
+            if (!ref) return;
+
+            modalTitle.textContent = ref.title;
+            modalYear.textContent = ref.year;
+            modalSummary.textContent = ref.summary;
+            modalWhy.textContent = ref.why;
+            modalLink.href = ref.file;
+
+            modalTags.innerHTML = ref.sections.map(sec =>
+                `<span class="tag ${getSectionClass(sec)}">${sec}</span>`
+            ).join('');
+
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        };
+
+        window.closeModal = function () {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        };
+
+        // Close on outside click
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                closeModal();
+            }
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // Initial Render
+        renderGrid(references);
+
+    </script>
+</body>
+
+</html>

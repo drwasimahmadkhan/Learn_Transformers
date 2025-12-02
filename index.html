@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attention is All You Need - Learning Hub</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1>Attention <span>is All You Need</span></h1>
+            <p>A comprehensive guide to the architecture that revolutionized Natural Language Processing. Built for
+                learners of all levels.</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="options-grid">
+            <!-- Option 1: Introduction -->
+            <a href="Intro_Transformers/index.html" target="_blank" class="card">
+                <div class="card-icon">
+                    <i class="fa-solid fa-book-open"></i>
+                </div>
+                <h2>Introduction</h2>
+                <p>Start your journey here. Understand the fundamental concepts and why Transformers changed everything.
+                </p>
+            </a>
+
+            <!-- Option 2: Math behind Transformer -->
+            <a href="Transformer_Math/main.html" target="_blank" class="card">
+                <div class="card-icon">
+                    <i class="fa-solid fa-square-root-variable"></i>
+                </div>
+                <h2>The Mathematics</h2>
+                <p>Deep dive into the equations. Explore Self-Attention, Positional Encoding, and the math that makes it
+                    work.</p>
+            </a>
+
+            <!-- Option 3: References Papers -->
+            <a href="Research_Papers/index.html" target="_blank" class="card">
+                <div class="card-icon">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+                <h2>Reference Papers</h2>
+                <p>Explore the 40+ foundational research papers cited in the original work to understand the context.
+                </p>
+            </a>
+
+            <!-- Option 4: Author's Links -->
+            <a href="Author's_Profile_Links/index.html" target="_blank" class="card">
+                <div class="card-icon">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <h2>Meet the Authors</h2>
+                <p>Connect with the brilliant researchers from Google Brain and Google Research who authored the paper.
+                </p>
+            </a>
+
+            <!-- Option 5: FAQ -->
+            <a href="FAQ/faq.html" target="_blank" class="card">
+                <div class="card-icon">
+                    <i class="fa-solid fa-circle-question"></i>
+                </div>
+                <h2>FAQ</h2>
+                <p>Common questions answered. Understand the nuances of the Transformer architecture and the paper.</p>
+            </a>
+
+            <!-- Option 6: Transformer Explainer -->
+            <a href="Explainer/explainer.html" target="_blank" class="card">
+                <div class="card-icon">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <h2>Interactive Explainer</h2>
+                <p>Visualize the magic. An interactive, animated guide to seeing exactly how the Transformer processes
+                    text.</p>
+            </a>
+
+            <!-- Option 7: Paper Versions -->
+            <div class="card" id="paper-versions-card">
+                <div class="card-icon">
+                    <i class="fa-solid fa-file-pdf"></i>
+                </div>
+                <h2>Paper Versions</h2>
+                <p>Access the original 2017 paper and the updated versions directly in your browser.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal for Paper Versions -->
+    <div class="modal-overlay" id="version-modal">
+        <div class="modal">
+            <h2>Select Version</h2>
+            <div class="modal-options">
+                <a href="Paper_Versions/Old_Attention_Paper.pdf" target="_blank" class="btn btn-outline">
+                    <i class="fa-regular fa-file-pdf"></i> Original (2017)
+                </a>
+                <a href="Paper_Versions/New_Attention_Paper.pdf" target="_blank" class="btn">
+                    <i class="fa-solid fa-file-pdf"></i> Updated Version
+                </a>
+                <a href="Paper_Versions/AttentionAllYouNeedHighlighted.pdf" target="_blank" class="btn btn-outline"
+                    style="border-color: var(--accent-color); color: var(--accent-color);">
+                    <i class="fa-solid fa-highlighter"></i> Highlighted Version
+                </a>
+            </div>
+            <button class="close-modal" id="close-modal">Close</button>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>

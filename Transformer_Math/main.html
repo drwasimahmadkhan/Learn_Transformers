@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformer Architecture Visualization</title>
+
+    <!-- Google Fonts: Inter for professional UI -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS (Standard Loading Method) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        }
+                    },
+                    fontSize: {
+                        'xxs': '0.65rem',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Smooth Scrolling */
+        .matrix-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 #f1f5f9;
+        }
+
+        .matrix-scroll::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+
+        .matrix-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+
+        .matrix-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .matrix-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Animations */
+        .slide-in {
+            animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mathematical Bracket Effect for Matrices */
+        .math-bracket {
+            position: relative;
+            padding: 4px 8px;
+        }
+
+        .math-bracket::before,
+        .math-bracket::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 12px;
+            border: 2px solid #64748b;
+            border-radius: 8px;
+        }
+
+        .math-bracket::before {
+            left: -2px;
+            border-right: 0;
+        }
+
+        .math-bracket::after {
+            right: -2px;
+            border-left: 0;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 text-slate-800 h-screen flex flex-col overflow-hidden">
+
+    <!-- TOP NAVIGATION BAR -->
+    <nav
+        class="bg-white border-b border-slate-200 h-16 flex-none z-30 px-6 flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="bg-brand-600 text-white p-1.5 rounded-lg shadow-sm">
+                <i data-lucide="network" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg text-slate-800 leading-tight tracking-tight">Transformer<span
+                        class="font-light text-slate-500">Lab</span></h1>
+            </div>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="hidden md:flex flex-col items-center w-1/3">
+            <div class="flex justify-between w-full text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                <span>Start</span>
+                <span id="nav-phase-label" class="text-brand-600">Phase</span>
+                <span>End</span>
+            </div>
+            <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                <div id="progress-bar" class="bg-brand-600 h-full transition-all duration-500 ease-out"
+                    style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <div class="text-sm font-bold text-brand-600 animate-pulse hidden lg:block mr-2">Use Arrow Keys ← →</div>
+            <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-md text-sm font-mono border border-slate-200">
+                Step <span id="step-count" class="font-bold text-slate-900">1</span>/<span id="total-steps"></span>
+            </span>
+        </div>
+    </nav>
+
+    <!-- MAIN WORKSPACE -->
+    <main class="flex-grow flex overflow-hidden relative">
+
+        <!-- SIDEBAR (Context & Formulas) - Desktop Only -->
+        <aside
+            class="hidden lg:flex flex-col w-96 bg-white border-r border-slate-200 h-full overflow-y-auto z-20 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.1)]">
+            <div class="p-8 space-y-8">
+                <!-- Header Section -->
+                <div>
+                    <div
+                        class="inline-flex items-center gap-2 px-2 py-1 bg-brand-50 text-brand-700 text-[10px] font-bold uppercase tracking-widest rounded mb-3 border border-brand-100">
+                        <i data-lucide="layers" class="w-3 h-3"></i> <span id="sidebar-phase">Phase</span>
+                    </div>
+                    <h2 id="sidebar-title" class="text-2xl font-bold text-slate-900 leading-tight mb-4">Title</h2>
+                    <p id="sidebar-desc" class="text-slate-600 leading-relaxed text-sm">Description</p>
+                </div>
+
+                <!-- Formula Card -->
+                <div id="formula-container"
+                    class="bg-slate-900 text-slate-200 rounded-xl p-5 shadow-lg border border-slate-700 hidden relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i data-lucide="sigma" class="w-16 h-16 text-white"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <div class="text-[10px] font-bold text-brand-400 uppercase tracking-widest mb-2">Mathematical
+                            Operation</div>
+                        <div id="formula-content" class="font-mono text-sm leading-relaxed text-brand-100"></div>
+                    </div>
+                </div>
+
+                <!-- Legend / Notes (Dynamically Swapped for Slide 5) -->
+                <div class="border-t border-slate-100 pt-6">
+                    <!-- Standard Legend (Shown by default) -->
+                    <div id="sidebar-legend">
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Legend</h4>
+                        <div class="grid grid-cols-2 gap-2 text-xs text-slate-600">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 bg-blue-50 border border-blue-200 rounded"></div> Vector/Matrix
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 bg-red-50 border border-red-200 rounded"></div> Weights
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 bg-brand-50 border border-brand-200 rounded"></div> Context
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 bg-yellow-50 border border-yellow-200 rounded"></div> Pos. Enc
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 5 Specific Image (Hidden by default) -->
+                    <div id="sidebar-image-container" class="hidden">
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Dot Product</h4>
+                        <img src="dot_product.png" alt="Dot Product Visualization"
+                            class="w-full rounded-lg shadow-sm border border-slate-200">
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- VISUALIZATION CANVAS -->
+        <section class="flex-1 bg-slate-50/50 overflow-y-auto relative w-full focus:outline-none" tabindex="0"
+            id="main-canvas">
+            <!-- Mobile Header (Visible only on small screens) -->
+            <div class="lg:hidden bg-white p-6 border-b border-slate-200 mb-6">
+                <div class="text-xs font-bold text-brand-600 uppercase tracking-widest mb-1" id="mobile-phase">Phase
+                </div>
+                <h2 class="text-2xl font-bold text-slate-900 mb-2" id="mobile-title">Title</h2>
+                <p class="text-sm text-slate-600" id="mobile-desc">Desc</p>
+                <div id="mobile-formula"
+                    class="mt-4 bg-slate-900 text-slate-200 p-3 rounded-lg text-xs font-mono hidden"></div>
+            </div>
+
+            <div class="max-w-7xl mx-auto p-4 md:p-8 lg:p-12 pb-32">
+                <div id="visualization-area" class="slide-in">
+                    <!-- Content Injected Here -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- LOGIC SCRIPT -->
+    <script>
+        // --- MATH UTILS ---
+        const addVectors = (a, b) => a.map((val, i) => val + b[i]);
+        const matMul = (A, B) => {
+            const result = [];
+            for (let r = 0; r < A.length; r++) {
+                const row = [];
+                for (let c = 0; c < B[0].length; c++) {
+                    let sum = 0;
+                    for (let k = 0; k < A[0].length; k++) {
+                        sum += A[r][k] * B[k][c];
+                    }
+                    row.push(sum);
+                }
+                result.push(row);
+            }
+            return result;
+        };
+        const transpose = (m) => m[0].map((_, colIndex) => m.map(row => row[colIndex]));
+        const softmaxVector = (vec) => {
+            const max = Math.max(...vec);
+            const exps = vec.map(v => Math.exp(v - max));
+            const sum = exps.reduce((a, b) => a + b, 0);
+            return exps.map(e => e / sum);
+        };
+        const softmaxMatrix = (mat) => mat.map(row => softmaxVector(row));
+        const layerNorm = (vec) => {
+            const mean = vec.reduce((a, b) => a + b, 0) / vec.length;
+            const variance = vec.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / vec.length;
+            const std = Math.sqrt(variance + 1e-6);
+            return vec.map(v => (v - mean) / std);
+        };
+        const relu = (x) => Math.max(0, x);
+
+        // --- CONSTANTS ---
+        const INPUT_TOKENS = [
+            { text: 'AI', id: 8, vector: [1.2, 0.4, -0.8, 1.0] },
+            { text: 'writes', id: 4, vector: [0.5, 2.1, -1.0, 0.2] },
+            { text: 'code', id: 2, vector: [-0.1, 0.1, 1.5, 0.0] },
+        ];
+        const ROW_LABELS = ['AI', 'writes', 'code'];
+        const D_MODEL = 4;
+
+        const W_Q_ENC = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]];
+        const W_K_ENC = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]];
+        const W_V_ENC = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]];
+
+        const W_1 = [[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, 2, 0], [0, 0, 0, 1]];
+        const B_1 = [0.2, 0.1, -0.5, 0.0];
+        const W_2 = [[0.5, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]];
+        const B_2 = [0.1, 0.0, 0.1, -0.1];
+
+        const getPositionalEncoding = (pos, d_model) => {
+            const pe = [];
+            for (let i = 0; i < d_model; i++) {
+                const exponent = (2 * Math.floor(i / 2)) / d_model;
+                const denominator = Math.pow(10000, exponent);
+                const angle = pos / denominator;
+                pe.push(i % 2 === 0 ? Math.sin(angle) : Math.cos(angle));
+            }
+            return pe;
+        };
+
+        // --- APP STATE ---
+        const state = {
+            step: 0,
+            data: null
+        };
+
+        // --- COMPONENT HELPERS ---
+        const MatrixDisplay = ({ title, matrix, rowLabels, colLabels, small = false, highlightColor = 'bg-brand-50', overrideValue }) => {
+            if (!matrix) return '';
+
+            const gridCols = `auto repeat(${matrix[0].length}, minmax(0, 1fr))`;
+
+            let html = `
+                <div class="flex flex-col items-center group">
+                    <h4 class="font-semibold text-slate-500 mb-2 text-sm tracking-wide uppercase flex items-center gap-2">
+                        ${title ? `<span class="bg-white px-3 py-1 rounded shadow-sm border border-slate-200">${title}</span>` : ''}
+                    </h4>
+                    
+                    <div class="math-bracket p-2">
+                        <div class="grid gap-1 bg-slate-200 border border-slate-200 rounded overflow-hidden shadow-sm" style="grid-template-columns: ${gridCols}">
+            `;
+
+            // Header Row
+            if (colLabels) {
+                html += `<div class="bg-slate-50"></div>`;
+                colLabels.forEach(c => {
+                    html += `<div class="bg-slate-50 p-2 text-xs text-center font-bold text-slate-400 uppercase tracking-wider">${c}</div>`;
+                });
+            }
+
+            // Data Rows
+            matrix.forEach((row, rIdx) => {
+                const label = rowLabels ? rowLabels[rIdx] : `R${rIdx}`;
+                html += `<div class="bg-slate-50 flex items-center justify-end px-3 py-1 text-xs font-bold text-slate-400 uppercase font-mono">${label}</div>`;
+
+                row.forEach((val) => {
+                    const displayVal = overrideValue !== undefined ? overrideValue : (typeof val === 'number' ? val.toFixed(2) : val);
+                    const sizeClass = small ? 'w-12 h-10 text-xs' : 'w-20 h-12 text-base md:text-lg';
+                    const isNegative = typeof val === 'number' && val < 0;
+
+                    html += `
+                        <div class="${highlightColor} relative flex items-center justify-center font-mono font-medium ${sizeClass} hover:bg-brand-50 transition-colors cursor-default group/cell">
+                            <span class="${isNegative ? 'text-rose-500' : 'text-slate-700'} relative z-10">${displayVal}</span>
+                            <!-- Tooltip -->
+                            <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover/cell:opacity-100 pointer-events-none transition-opacity z-20 whitespace-nowrap">
+                                Val: ${typeof val === 'number' ? val.toFixed(6) : val}
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+
+            html += `</div></div></div>`;
+            return html;
+        };
+
+        // --- INITIALIZATION ---
+        function initData() {
+            // ENCODER
+            const X_emb = INPUT_TOKENS.map(t => t.vector);
+            const PE = X_emb.map((_, i) => getPositionalEncoding(i, D_MODEL));
+            const X = X_emb.map((row, i) => addVectors(row, PE[i]));
+
+            const Q = matMul(X, W_Q_ENC);
+            const K = matMul(X, W_K_ENC);
+            const V = matMul(X, W_V_ENC);
+
+            const K_Transposed = transpose(K);
+            let scores = matMul(Q, K_Transposed);
+            const dk_sqrt = Math.sqrt(D_MODEL);
+            let scaled_scores = scores.map(row => row.map(val => val / dk_sqrt));
+            const attn_weights = softmaxMatrix(scaled_scores);
+
+            const Z = matMul(attn_weights, V);
+
+            const resid1 = X.map((row, r) => addVectors(row, Z[r]));
+            const norm1 = resid1.map(row => layerNorm(row));
+
+            const linear1_pre_bias = matMul(norm1, W_1);
+            const linear1_with_bias = linear1_pre_bias.map(row => addVectors(row, B_1));
+            const ff_hidden = linear1_with_bias.map(row => row.map(val => relu(val)));
+            const ff_output_pre_bias = matMul(ff_hidden, W_2);
+            const ff_output = ff_output_pre_bias.map(row => addVectors(row, B_2));
+
+            const resid2 = norm1.map((row, r) => addVectors(row, ff_output[r]));
+            const encoder_output = resid2.map(row => layerNorm(row));
+
+            // DECODER
+            const DECODER_INPUT_VEC = [[0.1, 0.1, 0.1, 0.1]];
+            const PE_DEC = [getPositionalEncoding(0, D_MODEL)];
+            const DEC_X = [addVectors(DECODER_INPUT_VEC[0], PE_DEC[0])];
+
+            const Q_dec = matMul(DEC_X, W_Q_ENC);
+            const K_dec = matMul(DEC_X, W_K_ENC);
+            const V_dec = matMul(DEC_X, W_V_ENC);
+
+            const K_dec_T = transpose(K_dec);
+            let dec_scores = matMul(Q_dec, K_dec_T);
+            let dec_scaled = dec_scores.map(row => row.map(val => val / dk_sqrt));
+            const dec_attn_weights = softmaxMatrix(dec_scaled);
+            const dec_Z = matMul(dec_attn_weights, V_dec);
+
+            const dec_resid1 = DEC_X.map((row, r) => addVectors(row, dec_Z[r]));
+            const dec_norm1 = dec_resid1.map(row => layerNorm(row));
+
+            const Q_cross = matMul(dec_norm1, W_Q_ENC);
+            const K_cross = matMul(encoder_output, W_K_ENC);
+            const V_cross = matMul(encoder_output, W_V_ENC);
+
+            const K_cross_T = transpose(K_cross);
+            let cross_scores = matMul(Q_cross, K_cross_T);
+            let cross_scaled = cross_scores.map(row => row.map(val => val / dk_sqrt));
+            const cross_weights = softmaxMatrix(cross_scaled);
+            const cross_Z = matMul(cross_weights, V_cross);
+
+            const dec_resid2 = dec_norm1.map((row, r) => addVectors(row, cross_Z[r]));
+            const dec_norm2 = dec_resid2.map(row => layerNorm(row));
+
+            const dec_linear1 = matMul(dec_norm2, W_1);
+            const dec_linear1_bias = dec_linear1.map(row => addVectors(row, B_1));
+            const dec_ff_hidden = dec_linear1_bias.map(row => row.map(val => relu(val)));
+            const dec_linear2 = matMul(dec_ff_hidden, W_2);
+            const dec_ff_output = dec_linear2.map(row => addVectors(row, B_2));
+
+            const dec_resid3 = dec_norm2.map((row, r) => addVectors(row, dec_ff_output[r]));
+            const dec_final_output = dec_resid3.map(row => layerNorm(row));
+
+            const W_VOCAB = [
+                [1, 0, -1, 0, 1],
+                [0, 1, 0, 1, 0],
+                [1, -1, 1, 0, 0],
+                [0, 0, 0, 1, 1]
+            ];
+            const logits = matMul(dec_final_output, W_VOCAB);
+            // Manually forcing probabilities as per user request
+            const probs = [[0.428, 0.010, 0.027, 0.396, 0.139]];
+
+            state.data = {
+                X_emb, PE, X,
+                W_Q: W_Q_ENC, W_K: W_K_ENC, W_V: W_V_ENC,
+                Q, K, V, K_Transposed,
+                scores, scaled_scores, attn_weights, Z,
+                resid1, norm1,
+                W_1, B_1, W_2, B_2,
+                linear1_pre_bias, linear1_with_bias, ff_hidden, ff_output_pre_bias, ff_output,
+                resid2, encoder_output,
+
+                DECODER_INPUT_VEC, PE_DEC, DEC_X,
+                Q_dec, K_dec, V_dec, K_dec_T, dec_scores, dec_scaled, dec_attn_weights, dec_Z, dec_norm1,
+                Q_cross, K_cross, V_cross, K_cross_T, cross_scores, cross_scaled, cross_weights, cross_Z,
+                dec_resid2, dec_norm2,
+                dec_linear1, dec_linear1_bias, dec_ff_hidden, dec_linear2, dec_ff_output,
+                dec_final_output, logits, probs, W_VOCAB
+            };
+        }
+
+        // --- RENDER HELPERS ---
+        const arrowRight = `<div class="text-slate-300"><i data-lucide="arrow-right" class="w-8 h-8"></i></div>`;
+        const arrowDown = `<div class="text-slate-300 py-2"><i data-lucide="arrow-down" class="w-6 h-6"></i></div>`;
+        const plusSign = `<div class="text-slate-300"><i data-lucide="plus" class="w-6 h-6"></i></div>`;
+        const equalSign = `<div class="text-slate-300"><i data-lucide="equal" class="w-6 h-6"></i></div>`;
+        const multiplySign = `<div class="text-slate-300"><i data-lucide="x" class="w-5 h-5"></i></div>`;
+
+        // --- STEP CONFIGURATION (Merged Logic) ---
+        const getStepConfig = () => [
+            {
+                title: "Input Tokenization",
+                phase: "Pre-processing",
+                description: "We use Byte Pair Encoding (BPE) to break the prompt into tokens.",
+                render: () => {
+                    const tokensHtml = INPUT_TOKENS.map(t => `
+                        <div class="flex flex-col items-center group slide-in">
+                            <div class="bg-white border-2 border-slate-200 rounded-xl p-8 text-center shadow-sm min-w-[160px] relative group-hover:border-brand-300 transition-colors">
+                                <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-slate-100 text-slate-500 text-xs px-2 rounded font-mono uppercase tracking-wide border border-slate-200">BPE Token</div>
+                                <div class="text-4xl font-serif text-slate-800 mt-2">"${t.text}"</div>
+                            </div>
+                            <div class="text-slate-300 my-4"><i data-lucide="arrow-down" class="w-6 h-6"></i></div>
+                            <div class="bg-brand-600 text-white font-mono text-2xl px-6 py-3 rounded-lg shadow-md flex items-center gap-3">
+                                <span class="text-xs opacity-50 uppercase">ID</span>
+                                ${t.id}
+                            </div>
+                        </div>
+                    `).join('');
+
+                    return `
+                        <div class="flex flex-col items-center justify-center h-full space-y-12">
+                            <div class="bg-brand-50 border-l-4 border-brand-600 p-8 rounded shadow-sm max-w-3xl mx-auto w-full">
+                                <h3 class="text-brand-500 font-bold uppercase text-xs tracking-wider mb-2">Input Prompt</h3>
+                                <p class="text-4xl font-serif text-slate-800">"AI writes code"</p>
+                            </div>
+                            <div class="flex gap-10 justify-center flex-wrap">${tokensHtml}</div>
+                        </div>
+                    `;
+                }
+            },
+            {
+                title: "Input Embeddings",
+                phase: "Input Embedding",
+                description: "Lookup vector representation for each token ID. The ID maps to a specific row in the embedding matrix.",
+                render: () => {
+                    // SHORTCUT: Create raw embeddings by diving current X_emb by 2 (sqrt(4))
+                    const rawX = state.data.X_emb.map(row => row.map(v => v / 2));
+
+                    return `
+                    <div class="flex flex-col gap-8 items-center justify-center h-full">
+                        <div class="bg-blue-50 text-blue-800 px-4 py-2 rounded-lg text-sm font-medium border border-blue-200">
+                            <span class="font-bold">Note:</span> We multiply initial embeddings by √d_model (√4 = 2) to stabilize gradients.
+                        </div>
+                        
+                        <div class="flex items-center gap-4 flex-wrap justify-center">
+                            <!-- Fake Initial Embeddings -->
+                             <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                                ${MatrixDisplay({
+                        title: "Raw Embeddings",
+                        matrix: rawX,
+                        rowLabels: ['ID 8', 'ID 4', 'ID 2'],
+                        colLabels: ['d0', 'd1', 'd2', 'd3'],
+                        highlightColor: 'bg-slate-50'
+                    })}
+                            </div>
+
+                            <!-- Operation -->
+                            <div class="flex flex-col items-center gap-2">
+                                <div class="text-slate-400 font-mono text-xl">×</div>
+                                <div class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded font-bold font-mono">√4</div>
+                            </div>
+
+                            <!-- Equals -->
+                            <div class="text-slate-400 font-mono text-xl">=</div>
+
+                            <!-- Final (Existing) Embeddings -->
+                             <div class="bg-white p-4 rounded-xl shadow-lg border border-slate-200">
+                                ${MatrixDisplay({
+                        title: "Scaled Embeddings (X_emb)",
+                        matrix: state.data.X_emb,
+                        rowLabels: ['ID 8', 'ID 4', 'ID 2'],
+                        colLabels: ['d0', 'd1', 'd2', 'd3'],
+                        highlightColor: 'bg-white'
+                    })}
+                            </div>
+                        </div>
+                    </div>
+                `}
+            },
+            {
+                title: "Positional Encoding (d=4)",
+                phase: "Positional Encoding",
+                customFormula: `
+                    i = floor(dim / 2)<br/>
+                    PE(pos, 2i) = sin(pos / 10000<sup>2i/d</sup>)<br/>
+                    PE(pos, 2i+1) = cos(pos / 10000<sup>2i/d</sup>)
+                `,
+                description: "Calculating PE values for ALL positions (0, 1, 2) with d_model=4.",
+                render: () => {
+                    const d = 4;
+                    let allCalcHTML = '';
+
+                    INPUT_TOKENS.forEach((tokenObj, pos) => {
+                        let calcRows = '';
+                        [0, 1, 2, 3].forEach(dim => {
+                            const i_val = Math.floor(dim / 2);
+                            const isEven = (dim % 2 === 0);
+                            const func = isEven ? 'sin' : 'cos';
+
+                            const val = isEven
+                                ? Math.sin(pos / Math.pow(10000, (2 * i_val) / d))
+                                : Math.cos(pos / Math.pow(10000, (2 * i_val) / d));
+
+                            calcRows += `
+                                <div class="grid grid-cols-[40px_50px_50px_1fr] gap-3 py-3 border-b border-slate-100 items-center last:border-0 text-sm"> <!-- Increased size/padding -->
+                                    <div class="font-bold text-slate-700 text-base">d${dim}</div> <!-- Increased font -->
+                                    <div class="font-mono text-brand-600 bg-brand-50 rounded px-2 py-1 text-center">i=${i_val}</div>
+                                    <div class="text-xs uppercase font-bold tracking-wide text-slate-400">${isEven ? 'Even' : 'Odd'}</div>
+                                    <div class="font-mono text-slate-600 whitespace-nowrap"> <!-- whitespace-nowrap prevents breaking -->
+                                        ${func}(${pos} / 10k<sup>${(2 * i_val) / d}</sup>) = <strong class="text-slate-900">${val.toFixed(2)}</strong>
+                                    </div>
+                                </div>
+                            `;
+                        });
+
+                        allCalcHTML += `
+                            <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200 min-w-[400px]"> <!-- Increased width/padding -->
+                                <h3 class="font-bold text-lg text-slate-800 mb-4 border-b pb-2 flex justify-between"> <!-- Increased Header -->
+                                    <span>Pos ${pos}: "${tokenObj.text}"</span>
+                                </h3>
+                                ${calcRows}
+                            </div>
+                        `;
+                    });
+
+                    return `
+                        <div class="flex flex-col h-full gap-8 justify-center p-4"> <!-- Removed items-center to allow scroll container to fill width -->
+                            
+                            <!-- Calculation Cards (Scrollable Container) -->
+                            <div class="flex gap-6 overflow-x-auto w-full pb-6 matrix-scroll px-4"> <!-- Slider Logic -->
+                                ${allCalcHTML}
+                            </div>
+                            
+                            <!-- ADDED FINAL ADDITION SECTION -->
+                            <div class="w-full flex justify-center">
+                                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 flex flex-col items-center w-full max-w-5xl">
+                                    <h4 class="font-bold text-sm uppercase tracking-widest text-slate-500 mb-6 w-full text-center border-b border-slate-200 pb-2">Final Addition: Embedding + PE = X</h4>
+                                    <div class="flex flex-col md:flex-row items-center justify-center gap-6">
+                                        ${MatrixDisplay({ title: "Embedding", matrix: state.data.X_emb, small: true, highlightColor: "bg-white" })}
+                                        ${plusSign}
+                                        ${MatrixDisplay({ title: "PE", matrix: state.data.PE, small: true, highlightColor: "bg-yellow-50" })}
+                                        ${equalSign}
+                                        ${MatrixDisplay({ title: "X", matrix: state.data.X, highlightColor: "bg-brand-50" })}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            },
+            {
+                title: "Encoder: Q, K, V Projection",
+                phase: "Encoder Layer 1",
+                customFormula: `
+                    Q = X · W<sup>Q</sup><br>
+                    K = X · W<sup>K</sup><br>
+                    V = X · W<sup>V</sup>
+                `,
+                description: "Multiply Input X by Weights Wq, Wk, Wv to get Q, K, V.",
+                render: () => `
+                    <div class="flex flex-col gap-12 items-center w-full">
+                        
+                        <!-- Q Block -->
+                        <div class="flex items-center justify-center gap-4 flex-wrap bg-white p-6 rounded-2xl border border-slate-200 shadow-sm w-full max-w-5xl">
+                            <div class="bg-brand-100 text-brand-700 px-3 py-1 rounded font-bold text-sm">Query</div>
+                            ${MatrixDisplay({ title: "Input X", matrix: state.data.X, small: true, highlightColor: "bg-slate-50" })}
+                            ${multiplySign}
+                            ${MatrixDisplay({ title: "Weight Q", matrix: state.data.W_Q, small: true, highlightColor: "bg-brand-50" })}
+                            ${arrowRight}
+                            ${MatrixDisplay({ title: "Q", matrix: state.data.Q, small: false, highlightColor: "bg-brand-100" })}
+                        </div>
+
+                        <!-- K Block -->
+                        <div class="flex items-center justify-center gap-4 flex-wrap bg-white p-6 rounded-2xl border border-slate-200 shadow-sm w-full max-w-5xl">
+                            <div class="bg-blue-100 text-blue-700 px-3 py-1 rounded font-bold text-sm">Key</div>
+                            ${MatrixDisplay({ title: "Input X", matrix: state.data.X, small: true, highlightColor: "bg-slate-50" })}
+                            ${multiplySign}
+                            ${MatrixDisplay({ title: "Weight K", matrix: state.data.W_K, small: true, highlightColor: "bg-blue-50" })}
+                            ${arrowRight}
+                            ${MatrixDisplay({ title: "K", matrix: state.data.K, small: false, highlightColor: "bg-blue-100" })}
+                        </div>
+
+                        <!-- V Block -->
+                         <div class="flex items-center justify-center gap-4 flex-wrap bg-white p-6 rounded-2xl border border-slate-200 shadow-sm w-full max-w-5xl">
+                            <div class="bg-green-100 text-green-700 px-3 py-1 rounded font-bold text-sm">Value</div>
+                            ${MatrixDisplay({ title: "Input X", matrix: state.data.X, small: true, highlightColor: "bg-slate-50" })}
+                            ${multiplySign}
+                            ${MatrixDisplay({ title: "Weight V", matrix: state.data.W_V, small: true, highlightColor: "bg-green-50" })}
+                            ${arrowRight}
+                            ${MatrixDisplay({ title: "V", matrix: state.data.V, small: false, highlightColor: "bg-green-100" })}
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "Encoder: Scaled Dot-Product & Masking",
+                phase: "Multi-Head Attention",
+                // REMOVED + M from formula
+                customFormula: `Attention = softmax( (Q·K<sup>T</sup>) / √d<sub>k</sub> )V`,
+                description: "Transpose K, calculate scores, and scale them.",
+                render: () => `
+                    <div class="space-y-10 w-full flex flex-col items-center">
+                        <div class="flex justify-center items-center gap-8">
+                            ${MatrixDisplay({ title: "Key (K)", matrix: state.data.K, small: true })}
+                            <div class="flex flex-col items-center gap-1">
+                                <span class="text-xs uppercase font-bold text-slate-400">Transpose</span>
+                                ${arrowRight}
+                            </div>
+                            ${MatrixDisplay({ title: "K Transposed", matrix: state.data.K_Transposed, highlightColor: "bg-brand-50", small: true })}
+                        </div>
+                        
+                        <div class="w-full h-px bg-slate-200 max-w-4xl"></div>
+
+                        <div class="flex flex-col lg:flex-row gap-12 items-center justify-center">
+                            <div class="text-center">
+                                <div class="text-xs mb-2 font-bold text-slate-500 uppercase">Q · Kᵀ (Raw)</div>
+                                ${MatrixDisplay({ matrix: state.data.scores, rowLabels: ROW_LABELS, colLabels: ROW_LABELS })}
+                            </div>
+                            
+                            <div class="flex flex-col items-center bg-brand-50 p-6 rounded-xl border border-brand-200">
+                                <div class="text-sm font-bold text-brand-800 mb-1 uppercase tracking-wider">Scaling Step</div>
+                                <div class="text-lg text-brand-700 font-mono">/ √4 = 2</div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <div class="text-xs mb-2 font-bold text-slate-500 uppercase">Scaled Scores</div>
+                                ${MatrixDisplay({ matrix: state.data.scaled_scores, rowLabels: ROW_LABELS, colLabels: ROW_LABELS, highlightColor: "bg-white" })}
+                            </div>
+                        </div>
+
+                        <!-- FIXED MASKING EXAMPLES -->
+                        <div class="mt-12 border-t border-slate-200 pt-10 w-full max-w-6xl">
+                            <h3 class="text-base font-bold text-slate-800 text-center mb-8 uppercase tracking-widest">Masking Concepts</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                
+                                <!-- 1. Anti-Cheating -->
+                                <div class="bg-red-50 p-8 rounded-xl border border-red-100 relative overflow-hidden">
+                                    <h4 class="font-bold text-red-900 mb-4 text-base uppercase">1. Anti-Cheating (Decoder)</h4>
+                                    <p class="text-sm text-red-700 mb-6">Future words masked with -∞</p>
+                                    
+                                    <div class="bg-white p-4 rounded-lg shadow-sm border border-red-100 font-mono text-sm overflow-x-auto">
+                                        <div class="grid grid-cols-4 gap-2 text-center items-center">
+                                            <!-- Headers -->
+                                            <div></div>
+                                            <div class="text-xs font-bold text-slate-400">AI</div>
+                                            <div class="text-xs font-bold text-slate-400">writes</div>
+                                            <div class="text-xs font-bold text-slate-400">code</div>
+
+                                            <!-- Row I -->
+                                            <div class="text-xs font-bold text-slate-400 text-right pr-2">AI</div>
+                                            <div class="bg-green-100 p-2 rounded text-green-800">Score</div>
+                                            <div class="bg-slate-100 p-2 rounded text-red-500 font-bold">-∞</div>
+                                            <div class="bg-slate-100 p-2 rounded text-red-500 font-bold">-∞</div>
+
+                                            <!-- Row love -->
+                                            <div class="text-xs font-bold text-slate-400 text-right pr-2">writes</div>
+                                            <div class="bg-green-100 p-2 rounded text-green-800">Score</div>
+                                            <div class="bg-green-100 p-2 rounded text-green-800">Score</div>
+                                            <div class="bg-slate-100 p-2 rounded text-red-500 font-bold">-∞</div>
+
+                                            <!-- Row cats -->
+                                            <div class="text-xs font-bold text-slate-400 text-right pr-2">code</div>
+                                            <div class="bg-green-100 p-2 rounded text-green-800">Score</div>
+                                            <div class="bg-green-100 p-2 rounded text-green-800">Score</div>
+                                            <div class="bg-green-100 p-2 rounded text-green-800">Score</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 2. Padding Mask -->
+                                <div class="bg-orange-50 p-8 rounded-xl border border-orange-100 relative overflow-hidden">
+                                    <h4 class="font-bold text-orange-900 mb-4 text-base uppercase">2. Ignore Filter (Padding)</h4>
+                                    <p class="text-sm text-orange-700 mb-6">Match length: Add &lt;PAD&gt; to Sentence A</p>
+                                    
+                                    <div class="bg-white p-4 rounded-lg border border-orange-200 shadow-sm text-center">
+                                        <div class="grid grid-cols-2 gap-4 mb-4 text-xs font-mono text-left">
+                                            <div>
+                                                <div class="font-bold mb-1 text-slate-500">Sent A (Len 3)</div>
+                                                <div class="bg-slate-50 p-1 rounded">AI writes code</div>
+                                            </div>
+                                            <div>
+                                                <div class="font-bold mb-1 text-slate-500">Sent B (Len 4)</div>
+                                                <div class="bg-slate-50 p-1 rounded">The movie was great</div>
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-cols-5 gap-2 text-xs font-mono items-center border-t border-slate-100 pt-4">
+                                            <div class="bg-green-100 p-2 rounded text-green-800">AI</div>
+                                            <div class="bg-green-100 p-2 rounded text-green-800">writes</div>
+                                            <div class="bg-green-100 p-2 rounded text-green-800">code</div>
+                                            <div class="bg-slate-100 text-slate-400 p-2 rounded">&lt;PAD&gt;</div>
+                                            
+                                            <div class="text-slate-400 font-bold">=</div>
+                                            
+                                            <div class="text-slate-500">Val</div>
+                                            <div class="text-slate-500">Val</div>
+                                            <div class="text-slate-500">Val</div>
+                                            <div class="text-red-500 font-bold bg-slate-50 rounded">-∞</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "Encoder: Softmax Calculation",
+                phase: "Multi-Head Attention",
+                customFormula: `σ(z)<sub>i</sub> = e<sup>z<sub>i</sub></sup> / Σ e<sup>z<sub>j</sub></sup>`,
+                description: "We convert scores to probabilities. Here is the exact math for ALL rows.",
+                render: () => {
+                    let calculationsHtml = '';
+                    const tokens = ROW_LABELS;
+
+                    tokens.forEach((token, idx) => {
+                        const row = state.data.scaled_scores[idx];
+                        const max = Math.max(...row);
+                        const exps = row.map(v => Math.exp(v - max));
+                        const sum = exps.reduce((a, b) => a + b, 0);
+                        const probs = exps.map(e => e / sum);
+
+                        calculationsHtml += `
+                            <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-100 mb-4 last:mb-0">
+                                <h5 class="font-bold text-slate-700 mb-3 border-b border-slate-100 pb-2 text-sm uppercase tracking-wide">Row ${idx} ("${token}")</h5>
+                                <div class="grid grid-cols-[80px_1fr] gap-x-6 gap-y-3 text-sm font-mono items-center">
+                                    <div class="text-slate-400 text-right">Scores</div>
+                                    <div class="bg-slate-50 p-2 rounded text-slate-600 tracking-wider">[${row.map(v => v.toFixed(2)).join(', ')}]</div>
+                                    <div class="text-slate-400 text-right">Exp(e^x)</div>
+                                    <div class="bg-slate-50 p-2 rounded text-slate-600 tracking-wider">[${exps.map(v => v.toFixed(2)).join(', ')}]</div>
+                                    <div class="text-slate-400 text-right">Sum</div>
+                                    <div class="font-bold text-brand-600">${sum.toFixed(2)}</div>
+                                    <div class="text-slate-400 text-right">Probs</div>
+                                    <div class="bg-green-50 p-2 rounded font-bold text-green-700 tracking-wider">[${probs.map(v => v.toFixed(2)).join(', ')}]</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    // LAYOUT CHANGED TO VERTICAL STACK FOR NO OVERLAP
+                    return `
+                    <div class="flex flex-col gap-8 w-full max-w-6xl mx-auto h-full overflow-hidden">
+                        <!-- Top: Math Detail (Scrollable) -->
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-inner flex-1 overflow-y-auto matrix-scroll">
+                            ${calculationsHtml}
+                        </div>
+                        
+                        <!-- Bottom: Visual Flow (Fixed) -->
+                        <div class="flex-none bg-white p-8 rounded-2xl border border-slate-200 shadow-sm overflow-x-auto">
+                            <div class="flex flex-col md:flex-row items-center justify-center gap-12 min-w-max">
+                                ${MatrixDisplay({ title: "Resulting Weights", matrix: state.data.attn_weights, highlightColor: "bg-green-50", rowLabels: ROW_LABELS, colLabels: ROW_LABELS })}
+                                <div class="text-slate-300"><i data-lucide="arrow-right" class="w-8 h-8"></i></div>
+                                <div class="flex items-center gap-6">
+                                    ${MatrixDisplay({ title: "Weights", matrix: state.data.attn_weights, small: true, highlightColor: "bg-green-50" })}
+                                    ${multiplySign}
+                                    ${MatrixDisplay({ title: "Matrix V", matrix: state.data.V, small: true })}
+                                    ${equalSign}
+                                    ${MatrixDisplay({ title: "Context Z", matrix: state.data.Z, highlightColor: "bg-brand-100" })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `}
+            },
+            {
+                title: "Encoder: Add & Norm",
+                phase: "Add & Norm",
+                customFormula: `LayerNorm( X + Z )`,
+                description: "Residual connection followed by Normalization.",
+                render: () => {
+                    let calculationsHtml = '';
+                    const tokens = ROW_LABELS;
+
+                    tokens.forEach((token, idx) => {
+                        const vec = state.data.resid1[idx];
+                        const mean = vec.reduce((a, b) => a + b, 0) / vec.length;
+                        const variance = vec.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / vec.length;
+                        const std = Math.sqrt(variance + 1e-6);
+
+                        let valMath = vec.map((v, i) => {
+                            return `<div class="mb-1 text-[10px]">Val ${i}: (${v.toFixed(2)} - ${mean.toFixed(2)}) / ${std.toFixed(2)} = <strong>${((v - mean) / std).toFixed(2)}</strong></div>`;
+                        }).join('');
+
+                        calculationsHtml += `
+                            <div class="bg-white p-3 rounded-lg shadow-sm border border-brand-100 mb-3">
+                                <h5 class="font-bold text-brand-700 mb-2 flex gap-2 items-center text-xs uppercase"><i data-lucide="calculator" class="w-3 h-3"></i> Row ${idx} ("${token}")</h5>
+                                <div class="text-xs font-mono space-y-1 text-slate-600">
+                                    <p><span class="text-slate-400">μ =</span> ${mean.toFixed(2)} | <span class="text-slate-400">σ =</span> ${std.toFixed(2)}</p>
+                                    <div class="grid grid-cols-2 gap-2 mt-2 bg-brand-50 p-2 rounded text-brand-900 border border-brand-100">${valMath}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    return `
+                    <div class="space-y-12 w-full">
+                         <div class="flex flex-wrap items-center justify-center gap-10 bg-white p-10 rounded-2xl shadow-sm border border-slate-200">
+                            ${MatrixDisplay({ title: "Input (X)", matrix: state.data.X, small: false, highlightColor: "bg-white" })}
+                            ${plusSign}
+                            ${MatrixDisplay({ title: "Attn Out (Z)", matrix: state.data.Z, small: false, highlightColor: "bg-brand-50" })}
+                            ${arrowRight}
+                            ${MatrixDisplay({ title: "Residual", matrix: state.data.resid1, small: false, highlightColor: "bg-slate-100" })}
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                            <!-- ADDED LAYER NORM MATH -->
+                            <div class="bg-brand-50/50 p-4 rounded-xl border border-brand-100 h-96 overflow-y-auto matrix-scroll">
+                                <h4 class="font-bold text-brand-900 mb-4 text-center text-xs uppercase">Layer Norm Math (All Elements)</h4>
+                                ${calculationsHtml}
+                            </div>
+                            
+                            <div class="flex flex-col items-center justify-center">
+                                ${arrowDown}
+                                <div class="mt-4">
+                                    ${MatrixDisplay({ title: "Final Normalized Output", matrix: state.data.norm1, highlightColor: "bg-white" })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `}
+            },
+            {
+                title: "Encoder: Feed Forward Network",
+                phase: "Feed Forward Network",
+                customFormula: `FFN(x) = ReLU(xW<sub>1</sub> + b<sub>1</sub>)W<sub>2</sub> + b<sub>2</sub>`,
+                description: "Expansion, Bias, ReLU, Projection. Step-by-step for all tokens.",
+                render: () => {
+                    const vec2Str = (v) => v.map(n => n.toFixed(1)).join(', ');
+                    const tokens = ROW_LABELS;
+                    let rowsHtml = '';
+
+                    tokens.forEach((token, i) => {
+                        rowsHtml += `
+                            <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 mb-6">
+                                <h5 class="font-bold text-slate-700 mb-4 text-sm uppercase">Token: "${token}"</h5>
+                                <div class="flex items-center gap-4 overflow-x-auto pb-4 min-w-max matrix-scroll">
+                                    <div class="text-xs border border-slate-200 p-3 bg-slate-50 rounded font-mono text-slate-500">Input<br/><strong class="text-slate-800 text-sm">${vec2Str(state.data.norm1[i])}</strong></div>
+                                    ${arrowRight}
+                                    <div class="text-xs border border-red-100 p-3 bg-red-50 rounded font-mono text-red-800">x·W1<br/><strong class="text-sm">${vec2Str(state.data.linear1_pre_bias[i])}</strong></div>
+                                    ${plusSign}
+                                    <div class="text-xs border border-pink-100 p-3 bg-pink-50 rounded font-mono text-pink-800">b1<br/><span class="text-sm">${vec2Str(state.data.B_1)}</span></div>
+                                    ${arrowRight}
+                                    <div class="text-xs border border-green-100 p-3 bg-green-50 rounded font-mono text-green-800">ReLU<br/><strong class="text-sm">${vec2Str(state.data.ff_hidden[i])}</strong></div>
+                                    ${arrowRight}
+                                    <div class="text-xs border border-blue-100 p-3 bg-blue-50 rounded font-mono text-blue-800">Hid·W2<br/><strong class="text-sm">${vec2Str(state.data.ff_output_pre_bias[i])}</strong></div>
+                                    ${plusSign}
+                                    <div class="text-xs border border-pink-100 p-3 bg-pink-50 rounded font-mono text-pink-800">b2<br/><span class="text-sm">${vec2Str(state.data.B_2)}</span></div>
+                                    ${equalSign}
+                                    <div class="text-xs border border-brand-200 p-3 bg-brand-100 font-bold rounded font-mono text-brand-900">Final<br/><span class="text-sm">${vec2Str(state.data.ff_output[i])}</span></div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    return `
+                    <div class="space-y-10 h-full flex flex-col">
+                        <!-- ADDED W1 DISPLAY -->
+                        <div class="flex flex-col items-center flex-none">
+                            <h4 class="font-bold text-slate-500 mb-2 text-sm uppercase">W1 Matrix (Expansion)</h4>
+                            ${MatrixDisplay({ matrix: state.data.W_1, small: true, highlightColor: "bg-red-50" })}
+                        </div>
+
+                        <!-- Fixed Overflow with auto scrolling -->
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 flex-1 overflow-y-auto matrix-scroll">
+                            ${rowsHtml}
+                        </div>
+
+                        <div class="flex flex-col items-center border-t border-slate-200 pt-6 flex-none">
+                            <h5 class="font-bold text-slate-500 mb-4 text-sm uppercase">Final FFN Output Matrix</h5>
+                            ${MatrixDisplay({ matrix: state.data.ff_output, small: false })}
+                        </div>
+                    </div>
+                    `;
+                }
+            },
+            {
+                title: "Encoder Output",
+                phase: "Encoder Final",
+                customFormula: `Encoder<sub>out</sub> = Norm( x + FFN(x) )`,
+                description: "Final Add & Norm for the Encoder stack.",
+                render: () => `
+                    <div class="flex flex-col items-center justify-center h-full gap-12">
+                        <div class="flex items-center gap-12">
+                            <!-- Removed Opacity as requested -->
+                            <div class="text-center"><div class="text-sm font-bold mb-2">Layer Norm 1</div>${MatrixDisplay({ matrix: state.data.norm1, small: false })}</div>
+                            ${plusSign}
+                            <!-- Removed Opacity as requested -->
+                            <div class="text-center"><div class="text-sm font-bold mb-2">FFN Result</div>${MatrixDisplay({ matrix: state.data.ff_output, small: false })}</div>
+                        </div>
+                        ${arrowDown}
+                        <div class="bg-white p-10 rounded-2xl shadow-lg border border-brand-100 relative overflow-hidden">
+                            <div class="absolute top-0 left-0 w-full h-1 bg-brand-500"></div>
+                            <h4 class="font-bold text-brand-700 mb-8 text-center text-base uppercase tracking-widest">Final Encoder Representation (K, V Source)</h4>
+                            ${MatrixDisplay({ matrix: state.data.encoder_output, highlightColor: "bg-brand-50", rowLabels: ROW_LABELS })}
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "Decoder Initialization",
+                phase: "Decoder Input",
+                description: "Feed <Start> token and PE(0).",
+                render: () => `
+                    <div class="flex items-center justify-center gap-10 h-full">
+                        <!-- Increased size and stacking -->
+                        <div class="flex flex-col gap-10 items-center bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                             <div class="flex gap-6 items-center">
+                                ${MatrixDisplay({ title: "Embedding", matrix: state.data.DECODER_INPUT_VEC, small: false, highlightColor: "bg-white" })}
+                                ${plusSign}
+                                ${MatrixDisplay({ title: "PE(0)", matrix: state.data.PE_DEC, small: false, highlightColor: "bg-yellow-50" })}
+                            </div>
+                            ${arrowDown}
+                            ${MatrixDisplay({ title: "Decoder Input", matrix: state.data.DEC_X, small: false, highlightColor: "bg-brand-50" })}
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "Decoder: Masked Self-Attention",
+                phase: "Masked Multi-Head Attention",
+                description: "Self-attention on the single available token (<Start>).",
+                render: () => `
+                    <div class="space-y-12 flex flex-col items-center">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-10 w-full max-w-5xl">
+                            <div class="flex flex-col items-center"><h5 class="font-bold text-slate-400 text-sm mb-4 uppercase">Query (Q)</h5>${MatrixDisplay({ matrix: state.data.Q_dec, small: false })}</div>
+                            <div class="flex flex-col items-center"><h5 class="font-bold text-slate-400 text-sm mb-4 uppercase">Key (K)</h5>${MatrixDisplay({ matrix: state.data.K_dec, small: false })}</div>
+                            <div class="flex flex-col items-center"><h5 class="font-bold text-slate-400 text-sm mb-4 uppercase">Value (V)</h5>${MatrixDisplay({ matrix: state.data.V_dec, small: false })}</div>
+                        </div>
+
+                        <!-- ADDED BACK WHY IS WEIGHT 1.0 -->
+                        <div class="flex flex-col items-center bg-slate-50 p-6 rounded-xl border border-slate-200 w-full max-w-2xl">
+                            <h4 class="font-bold text-sm text-slate-800 mb-4">Why is weight 1.0?</h4>
+                            <div class="font-mono text-sm text-slate-600 space-y-2">
+                                <p>1. Q · K<sup>T</sup> = <span class="font-bold">${state.data.dec_scores[0][0].toFixed(2)}</span> (Scalar Score)</p>
+                                <p>2. Scale: ${state.data.dec_scores[0][0].toFixed(2)} / 2 = <span class="font-bold">${state.data.dec_scaled[0][0].toFixed(2)}</span></p>
+                                <p>3. Softmax([${state.data.dec_scaled[0][0].toFixed(2)}]) = <span class="bg-green-100 text-green-800 px-1 rounded font-bold">1.0</span> (Single item always 100%)</p>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-center items-center gap-6 mt-6">
+                            ${MatrixDisplay({ title: "Weight (1.0)", matrix: state.data.dec_attn_weights, small: false, highlightColor: "bg-green-50" })}
+                            ${multiplySign}
+                            ${MatrixDisplay({ title: "Value (V)", matrix: state.data.V_dec, small: false })}
+                            ${equalSign}
+                            ${MatrixDisplay({ title: "Output (Z)", matrix: state.data.dec_Z, highlightColor: "bg-brand-100", small: false })}
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "Decoder: Cross Attention",
+                phase: "Encoder-Decoder Attention",
+                customFormula: `Q<sub>dec</sub> · K<sub>enc</sub><sup>T</sup> → Softmax → · V<sub>enc</sub>`,
+                description: "Decoder Query compares with Encoder Keys.",
+                render: () => `
+                    <div class="space-y-10 flex flex-col items-center">
+                        <div class="flex justify-center items-start gap-16 bg-white p-8 rounded-xl border border-slate-200 shadow-sm">
+                            <div class="flex flex-col items-center">
+                                <div class="bg-brand-50 text-brand-700 px-3 py-1 rounded text-xs font-bold mb-4 uppercase tracking-wide border border-brand-100">Decoder Q</div>
+                                ${MatrixDisplay({ matrix: state.data.Q_cross, small: false, highlightColor: "bg-white" })}
+                            </div>
+                            <div class="flex flex-col items-center pt-10 text-slate-300"><i data-lucide="x" class="w-8 h-8"></i></div>
+                            <div class="flex flex-col items-center">
+                                <div class="bg-blue-50 text-blue-700 px-3 py-1 rounded text-xs font-bold mb-4 uppercase tracking-wide border border-blue-100">Encoder Kᵀ</div>
+                                ${MatrixDisplay({ matrix: state.data.K_cross_T, small: false, highlightColor: "bg-white" })}
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-16 w-full max-w-5xl">
+                            <div class="flex flex-col items-center">
+                                <h4 class="font-bold text-slate-400 mb-4 text-xs uppercase">Raw Similarity Scores (1 × 3)</h4>
+                                ${MatrixDisplay({ matrix: state.data.cross_scores, colLabels: ROW_LABELS, highlightColor: "bg-slate-50", small: false })}
+                            </div>
+
+                            <div class="flex flex-col items-center">
+                                <h4 class="font-bold text-green-600 mb-4 text-xs uppercase">Softmax Weights</h4>
+                                ${MatrixDisplay({ matrix: state.data.cross_weights, colLabels: ROW_LABELS, highlightColor: "bg-green-50", small: false })}
+                            </div>
+                        </div>
+
+                        <div class="flex justify-center items-center gap-8 border-t border-slate-200 pt-10 w-full">
+                            ${MatrixDisplay({ title: "Weights", matrix: state.data.cross_weights, small: false, highlightColor: "bg-green-50" })}
+                            ${multiplySign}
+                            ${MatrixDisplay({ title: "Encoder V", matrix: state.data.V_cross, small: false, highlightColor: "bg-blue-50" })}
+                            ${equalSign}
+                            ${MatrixDisplay({ title: "Context Vector", matrix: state.data.cross_Z, highlightColor: "bg-brand-100", small: false })}
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "Decoder: Add & Norm (Post Cross-Attn)",
+                phase: "Add & Norm",
+                description: "Add Context Vector back to stream and normalize.",
+                render: () => {
+                    // Generate math for Layer Norm
+                    const vec = state.data.dec_resid2[0];
+                    const mean = vec.reduce((a, b) => a + b, 0) / vec.length;
+                    const variance = vec.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / vec.length;
+                    const std = Math.sqrt(variance + 1e-6);
+
+                    // Generate math for all 4 values
+                    let valMath = vec.map((v, i) => {
+                        return `<div class="mb-1 text-sm">Val ${i}: (${v.toFixed(2)} - ${mean.toFixed(2)}) / ${std.toFixed(2)} = <strong>${((v - mean) / std).toFixed(2)}</strong></div>`;
+                    }).join('');
+
+                    return `
+                    <div class="space-y-16 mt-8">
+                        <div class="flex flex-col xl:flex-row items-center justify-center gap-10">
+                            <div class="text-center opacity-60"><div class="text-xs font-bold mb-2">Masked Attn</div>${MatrixDisplay({ matrix: state.data.dec_norm1, small: false, highlightColor: "bg-white" })}</div>
+                            ${plusSign}
+                            <div class="text-center"><div class="text-xs font-bold mb-2 text-brand-600">Context</div>${MatrixDisplay({ matrix: state.data.cross_Z, small: false, highlightColor: "bg-brand-50" })}</div>
+                            ${arrowRight}
+                            <div class="text-center opacity-60"><div class="text-xs font-bold mb-2">Residual</div>${MatrixDisplay({ matrix: state.data.dec_resid2, small: false, highlightColor: "bg-slate-50" })}</div>
+                        </div>
+
+                        <!-- ADDED LAYER NORM MATH -->
+                        <div class="bg-purple-50 p-6 rounded-xl border border-purple-100 max-w-4xl mx-auto shadow-inner w-full">
+                            <h4 class="font-bold text-purple-900 mb-4 flex gap-2 items-center text-sm uppercase tracking-wide"><i data-lucide="calculator" class="w-5 h-5"></i> Layer Norm Math (All Elements)</h4>
+                            <div class="text-sm font-mono space-y-4 text-purple-900">
+                                <p class="bg-white p-2 rounded border border-purple-100 inline-block">Row Values: [${vec.map(v => v.toFixed(2)).join(', ')}]</p>
+                                <p class="font-bold">Mean (μ) = ${mean.toFixed(2)} | Std Dev (σ) = ${std.toFixed(2)}</p>
+                                <div class="grid grid-cols-2 gap-6 mt-4 pt-4 border-t border-purple-200">
+                                    ${valMath}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-center">
+                            ${MatrixDisplay({ title: "Normalized Out", matrix: state.data.dec_norm2, highlightColor: "bg-white", small: false })}
+                        </div>
+                    </div>
+                `}
+            },
+            {
+                title: "Decoder: Final Feed Forward",
+                phase: "Decoder FFN & Norm",
+                description: "Process context vector through FFN.",
+                render: () => {
+                    const i = 0;
+                    const vec2Str = (v) => v.map(n => n.toFixed(1)).join(', ');
+                    return `
+                        <div class="flex items-center justify-center h-full">
+                            <div class="bg-white p-10 rounded-xl shadow-lg border border-slate-200 w-full overflow-x-auto matrix-scroll">
+                                <h4 class="text-lg font-bold text-slate-500 mb-8 flex items-center gap-2 sticky left-0 uppercase tracking-wide">Processing &lt;Start&gt;</h4>
+                                <div class="flex items-center gap-6 min-w-max">
+                                    <div class="text-xs border border-slate-200 p-4 bg-slate-50 rounded font-mono text-slate-500">Input<br/><strong class="text-slate-800 text-base">${vec2Str(state.data.dec_norm2[i])}</strong></div>
+                                    ${arrowRight}
+                                    <div class="text-xs border border-red-100 p-4 bg-red-50 rounded font-mono text-red-800">Linear 1<br/><strong class="text-base">${vec2Str(state.data.dec_linear1[i])}</strong></div>
+                                    ${plusSign}
+                                    <div class="text-xs border border-pink-100 p-4 bg-pink-50 rounded font-mono text-pink-800">Bias<br/><span class="text-base">${vec2Str(state.data.B_1)}</span></div>
+                                    ${arrowRight}
+                                    <div class="text-xs border border-green-100 p-4 bg-green-50 rounded font-mono text-green-800">ReLU<br/><strong class="text-base">${vec2Str(state.data.dec_ff_hidden[i])}</strong></div>
+                                    ${arrowRight}
+                                    <div class="text-xs border border-blue-100 p-4 bg-blue-50 rounded font-mono text-blue-800">Final<br/><strong class="text-base">${vec2Str(state.data.dec_ff_output[i])}</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            },
+            {
+                title: "Final Output Projection",
+                phase: "Linear & Softmax",
+                customFormula: `P = Softmax( x · W<sub>vocab</sub> )`,
+                description: "Project final vector to vocabulary size.",
+                render: () => {
+                    // UPDATED LABELS: 'Architecture' at 40%, 'and' at 14%
+                    const labels = ['efficiently', 'a', 'the', 'Architecture', 'and'];
+                    const probs = state.data.probs[0];
+                    const maxProbIdx = probs.indexOf(Math.max(...probs));
+
+                    let bars = '';
+                    probs.forEach((p, i) => {
+                        const h = Math.max(p * 100, 2);
+                        const isMax = i === maxProbIdx;
+                        const colorClass = isMax ? 'bg-brand-600' : 'bg-slate-300';
+                        const textClass = isMax ? 'text-brand-700 font-bold' : 'text-slate-500';
+
+                        // REMOVED border-t from labels
+                        bars += `
+                            <div class="flex flex-col items-center w-16 md:w-24 group relative h-full justify-end">
+                                <div class="text-xs mb-2 font-mono text-slate-400 ${(p * 100).toFixed(1)}%">${(p * 100).toFixed(0)}%</div>
+                                <div class="w-full ${colorClass} rounded-t-md transition-all duration-700 relative hover:opacity-80" style="height: ${h}%"></div>
+                                <div class="text-sm mt-3 pt-2 w-full text-center ${textClass}">${labels[i]}</div>
+                            </div>
+                        `;
+                    });
+
+                    return `
+                        <div class="flex flex-col h-full gap-10">
+                            <div class="flex justify-center items-center gap-10">
+                                <div class="text-center"><div class="text-xs font-bold mb-2 text-slate-400">Decoder Out</div>${MatrixDisplay({ matrix: state.data.dec_final_output, small: false })}</div>
+                                ${multiplySign}
+                                <div class="text-center"><div class="text-xs font-bold mb-2 text-slate-400">W_vocab</div>${MatrixDisplay({ matrix: state.data.W_VOCAB, small: false, highlightColor: "bg-slate-50" })}</div>
+                            </div>
+                            
+                            ${arrowDown}
+
+                            <div class="bg-white p-10 rounded-2xl shadow-lg border border-slate-200 w-full max-w-3xl mx-auto flex-1 flex flex-col">
+                                <h3 class="font-bold text-sm text-brand-800 uppercase tracking-widest text-center mb-10">Probability Distribution</h3>
+                                <div class="flex justify-around items-end flex-1 gap-4 border-b border-slate-100 pb-4 h-48">${bars}</div>
+                                <div class="mt-10 text-center">
+                                    <div class="text-xs text-slate-400 uppercase tracking-widest mb-4">Predicted Next Token</div>
+                                    <div class="inline-block bg-green-50 text-green-700 text-5xl font-serif px-12 py-6 rounded-2xl border border-green-200 shadow-sm">
+                                        "${labels[maxProbIdx]}"
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        ];
+
+        // --- RENDER CONTROLLER ---
+        function render() {
+            if (typeof lucide === 'undefined') {
+                console.error('Lucide not yet loaded, retrying...');
+                setTimeout(render, 100);
+                return;
+            }
+
+            const steps = getStepConfig();
+            const config = steps[state.step];
+
+            // 1. Update Navigation Info
+            document.getElementById('step-count').innerText = state.step + 1;
+            document.getElementById('total-steps').innerText = steps.length;
+            document.getElementById('progress-bar').style.width = `${((state.step + 1) / steps.length) * 100}%`;
+            document.getElementById('nav-phase-label').innerText = config.phase;
+
+            // 2. Update Sidebar (Desktop)
+            document.getElementById('sidebar-phase').innerText = config.phase;
+            document.getElementById('sidebar-title').innerText = config.title;
+            document.getElementById('sidebar-desc').innerHTML = config.description;
+
+            const formulaContainer = document.getElementById('formula-container');
+            const formulaContent = document.getElementById('formula-content');
+            if (config.customFormula) {
+                formulaContainer.classList.remove('hidden');
+                formulaContent.innerHTML = config.customFormula;
+            } else {
+                formulaContainer.classList.add('hidden');
+            }
+
+            // --- DYNAMIC SIDEBAR LOGIC (LEGEND VS IMAGE) ---
+            const legend = document.getElementById('sidebar-legend');
+            const customImg = document.getElementById('sidebar-image-container');
+
+            // Check if current step corresponds to Slide 5 (index 4)
+            if (state.step === 4) {
+                legend.classList.add('hidden');
+                customImg.classList.remove('hidden');
+            } else {
+                legend.classList.remove('hidden');
+                customImg.classList.add('hidden');
+            }
+
+            // 3. Update Mobile Header
+            document.getElementById('mobile-phase').innerText = config.phase;
+            document.getElementById('mobile-title').innerText = config.title;
+            document.getElementById('mobile-desc').innerText = config.description.replace(/<[^>]*>?/gm, '');
+            const mobileFormula = document.getElementById('mobile-formula');
+            if (config.customFormula) {
+                mobileFormula.classList.remove('hidden');
+                mobileFormula.innerHTML = config.customFormula;
+            } else {
+                mobileFormula.classList.add('hidden');
+            }
+
+            // 4. Render Visualization
+            document.getElementById('visualization-area').innerHTML = config.render();
+
+            // Focus canvas for key events if needed
+            document.getElementById('main-canvas').focus();
+
+            // 5. Initialize Icons
+            lucide.createIcons();
+        }
+
+        // --- KEYBOARD NAVIGATION ---
+        window.addEventListener('keydown', (e) => {
+            const max = getStepConfig().length - 1;
+            if (e.key === 'ArrowRight' && state.step < max) {
+                state.step++;
+                render();
+            } else if (e.key === 'ArrowLeft' && state.step > 0) {
+                state.step--;
+                render();
+            }
+        });
+
+        // --- STARTUP ---
+        // Ensure scripts are loaded before starting
+        window.addEventListener('load', () => {
+            initData();
+            render();
+            // Initial focus to ensure arrow keys work immediately
+            document.getElementById('main-canvas').focus();
+        });
+
+    </script>
+</body>
+
+</html>
