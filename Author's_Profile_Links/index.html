@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authors - Attention is All You Need</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .authors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 1rem 0;
+        }
+
+        .author-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .author-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent-color);
+        }
+
+        .author-avatar {
+            width: 120px;
+            height: 120px;
+            background: #e0e7ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            border: 3px solid transparent;
+        }
+
+        .author-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .author-card:hover .author-avatar {
+            border-color: var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        .author-name {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .author-role {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .linkedin-label {
+            margin-top: 0.75rem;
+            font-size: 0.85rem;
+            color: #0077b5;
+            /* LinkedIn Blue */
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .author-card:hover .linkedin-label {
+            opacity: 1;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-bottom: 2rem;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="hero"
+            style="padding: 2rem 0 4rem; margin-bottom: 0; background: transparent; text-align: left; border: none; box-shadow: none;">
+            <div class="hero-content" style="margin: 0; text-align: left;">
+                <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">Meet the Authors</h1>
+                <p style="margin: 0; text-align: left;">The brilliant minds at Google Brain and Google Research who
+                    brought us the Transformer.</p>
+            </div>
+        </header>
+
+        <div class="authors-grid">
+            <a href="https://www.linkedin.com/in/ashish-vaswani-99892181/" target="_blank" class="author-card">
+                <div class="author-avatar"><img src="assets/Ashish Vaswani.jpeg" alt="Ashish Vaswani"></div>
+                <div class="author-name">Ashish Vaswani</div>
+                <div class="author-role">Google Brain</div>
+                <div class="linkedin-label"><i class="fa-brands fa-linkedin"></i> LinkedIn Profile</div>
+            </a>
+            <a href="https://www.linkedin.com/in/noam-shazeer-3b27288/" target="_blank" class="author-card">
+                <div class="author-avatar"><img src="assets/Noam Shazeer.png" alt="Noam Shazeer"></div>
+                <div class="author-name">Noam Shazeer</div>
+                <div class="author-role">Google Brain</div>
+                <div class="linkedin-label"><i class="fa-brands fa-linkedin"></i> LinkedIn Profile</div>
+            </a>
+            <a href="https://www.linkedin.com/in/nikiparmar/" target="_blank" class="author-card">
+                <div class="author-avatar"><img src="assets/Niki Parmar.jpeg" alt="Niki Parmar"></div>
+                <div class="author-name">Niki Parmar</div>
+                <div class="author-role">Google Research</div>
+                <div class="linkedin-label"><i class="fa-brands fa-linkedin"></i> LinkedIn Profile</div>
+            </a>
+            <a href="https://www.linkedin.com/in/jakob-uszkoreit-b238b51/" target="_blank" class="author-card">
+                <div class="author-avatar"><img src="assets/Jakob Uszkoreit.jpeg" alt="Jakob Uszkoreit"></div>
+                <div class="author-name">Jakob Uszkoreit</div>
+                <div class="author-role">Google Research</div>
+                <div class="linkedin-label"><i class="fa-brands fa-linkedin"></i> LinkedIn Profile</div>
+            </a>
+            <a href="https://www.linkedin.com/in/llion-jones-9ab3064b/?originalSubdomain=jp" target="_blank"
+                class="author-card">
+                <div class="author-avatar"><img src="assets/Llion (ライオン) Jones.jpeg" alt="Llion Jones"></div>
+                <div class="author-name">Llion Jones</div>
+                <div class="author-role">Google Research</div>
+                <div class="linkedin-label"><i class="fa-brands fa-linkedin"></i> LinkedIn Profile</div>
+            </a>
+            <a href="https://www.linkedin.com/in/aidangomez/" target="_blank" class="author-card">
+                <div class="author-avatar"><img src="assets/Aidan Gomez.jpeg" alt="Aidan Gomez"></div>
+                <div class="author-name">Aidan N. Gomez</div>
+                <div class="author-role">University of Toronto</div>
+                <div class="linkedin-label"><i class="fa-brands fa-linkedin"></i> LinkedIn Profile</div>
+            </a>
+            <a href="https://www.linkedin.com/in/lukaszkaiser/" target="_blank" class="author-card">
+                <div class="author-avatar"><img src="assets/Lukasz Kaiser.jpeg" alt="Łukasz Kaiser"></div>
+                <div class="author-name">Łukasz Kaiser</div>
+                <div class="author-role">Google Brain</div>
+                <div class="linkedin-label"><i class="fa-brands fa-linkedin"></i> LinkedIn Profile</div>
+            </a>
+            <a href="https://www.linkedin.com/in/illia-polosukhin-77b6538/?originalSubdomain=pt" target="_blank"
+                class="author-card">
+                <div class="author-avatar"><img src="assets/Illia Polosukhin.jpeg" alt="Illia Polosukhin"></div>
+                <div class="author-name">Illia Polosukhin</div>
+                <div class="author-role">Google Research</div>
+                <div class="linkedin-label"><i class="fa-brands fa-linkedin"></i> LinkedIn Profile</div>
+            </a>
+        </div>
+    </div>
+</body>
+
+</html>

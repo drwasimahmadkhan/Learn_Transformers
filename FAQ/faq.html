@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attention Is All You Need - FAQ</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <div class="faq-page-container">
+
+        <header class="faq-header">
+            <h1>Frequently Asked Questions</h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem;">Deep dive into the "Attention Is All You Need" paper
+                and the Transformer architecture.</p>
+        </header>
+
+        <div class="faq-container">
+            <!-- FAQ items will be injected here by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        const faqData = [
+            {
+                question: "What is the core idea behind the 'Attention Is All You Need' paper?",
+                answer: "The paper's main contribution is the Transformer, a model that uses self-attention to process text. Unlike previous models (RNNs) that read word-by-word, the Transformer can look at the entire sentence at once, making it faster and more powerful."
+            },
+            {
+                question: "Can you explain the problem with RNNs in simple terms?",
+                answer: "Imagine reading a very long book through a tiny tube where you can only see one word at a time. By the time you reach the end, you'd likely forget the beginning. RNNs had a similar issue; they struggled to remember information from long ago in a sequence, and they couldn't be easily parallelized."
+            },
+            {
+                question: "What is 'attention' in the context of a neural network?",
+                answer: "Attention is a mechanism that allows the model to focus on the most relevant parts of the input. When translating a sentence, for example, it helps the model pay 'attention' to specific words in the source sentence as it generates each word in the output."
+            },
+            {
+                question: "What's the 'Query, Key, and Value' analogy for attention?",
+                answer: "Think of a YouTube search. Your search term is the 'Query'. The titles of all the videos on the platform are the 'Keys'. When your query matches a key, the system returns the video itself, which is the 'Value'. Self-attention does a similar thing with words in a sentence."
+            },
+            {
+                question: "Why is it called 'Multi-Head' attention?",
+                answer: "Instead of just calculating attention once, the Transformer does it multiple times in parallel from different 'perspectives' or 'heads'. One head might focus on grammatical relationships, while another might focus on the semantic meaning. These different perspectives are then combined to get a richer understanding."
+            },
+            {
+                question: "How does the Transformer know the order of words if it's not sequential?",
+                answer: "This is a key challenge that is solved by 'Positional Encoding'. Before the words go into the model, a special mathematical 'timestamp' is added to each word's embedding. This gives the model a sense of the word's position in the sentence."
+            },
+            {
+                question: "What is the difference between the Encoder and the Decoder?",
+                answer: "The Encoder's job is to read the input sentence and build a rich understanding of it. The Decoder's job is to take that understanding and generate the output, for example, the translated sentence. In many modern models like GPT, only the decoder part is used."
+            },
+            {
+                question: "How does 'self-attention' work?",
+                answer: "Self-attention is when the words in a sentence pay attention to other words in the same sentence. For instance, in 'The dog chased its tail', self-attention helps the model understand that 'its' refers to the 'dog'. Each word looks at all the other words to get more context."
+            },
+            {
+                question: "What's the role of the Feed-Forward Network?",
+                answer: "After the attention mechanism has done its job of gathering context from other words, the Feed-Forward Network is a standard neural network layer that processes this information for each word individually. It helps in adding more computational depth to the model."
+            },
+            {
+                question: "Why was this paper so impactful?",
+                answer: "The 'Attention Is All You Need' paper was a paradigm shift. The Transformer architecture's efficiency and power unlocked the ability to train much larger models on more data than ever before, paving the way for modern large language models (LLMs) like BERT, GPT-3, and beyond."
+            },
+            {
+                question: "What are some real-world applications of the Transformer architecture?",
+                answer: "Transformers are the backbone of most modern NLP tasks. This includes machine translation (Google Translate), text generation (ChatGPT), summarization, question answering, and even in fields like computer vision and biology for analyzing DNA sequences."
+            },
+            {
+                question: "What is a 'token' in the context of a Transformer?",
+                answer: "A token is the basic unit of text that a Transformer model processes. It's often a word, but it can also be a sub-word. For example, the word 'unbelievable' might be broken down into tokens like 'un', 'believe', and 'able'. This allows the model to handle words it has never seen before."
+            },
+            {
+                question: "What is Layer Normalization in the Transformer?",
+                answer: "Layer Normalization is a technique used in each sub-layer of the Transformer (both within self-attention and the feed-forward network). It normalizes the inputs across the features, which helps to stabilize and accelerate the training process by preventing the activations from becoming too large or too small."
+            },
+            {
+                question: "What is a residual connection (skip connection) and why is it used?",
+                answer: "A residual connection is where the output of a layer is added directly to its input. In the Transformer, these are used around both the multi-head attention and feed-forward sub-layers. They help prevent the vanishing gradient problem, allowing for deeper networks to be trained more effectively by enabling information to flow more directly through the network."
+            },
+            {
+                question: "How does the Transformer handle variable-length input sequences?",
+                answer: "Input sequences are typically padded to a uniform length. The Transformer uses a 'masking' mechanism, especially in the decoder's self-attention, to prevent attention to these padded elements. This ensures that the model only attends to real data and not the artificial padding."
+            },
+            {
+                question: "What is the computational complexity of the Self-Attention layer?",
+                answer: "The computational complexity of a single self-attention layer is O(n^2 * d), where 'n' is the sequence length and 'd' is the dimension of the embedding. This quadratic dependency on sequence length is a limitation for very long sequences, though methods like 'local attention' or 'sparse attention' can mitigate this."
+            }
+        ];
+
+        const faqContainer = document.querySelector('.faq-container');
+
+        function renderFaq(items) {
+            faqContainer.innerHTML = '';
+            items.forEach((item, index) => {
+                const faqItem = document.createElement('div');
+                faqItem.classList.add('faq-item');
+                // Add a slight delay for staggered animation
+                faqItem.style.animation = `fadeInDown 0.5s ease-out ${index * 0.1}s backwards`;
+
+                faqItem.innerHTML = `
+                    <div class="faq-question">
+                        <h3>${item.question}</h3>
+                        <i class="fa-solid fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>${item.answer}</p>
+                    </div>
+                `;
+                faqContainer.appendChild(faqItem);
+
+                const question = faqItem.querySelector('.faq-question');
+                question.addEventListener('click', () => {
+                    // Close other items (optional, but good for UX)
+                    const currentlyActive = document.querySelector('.faq-item.active');
+                    if (currentlyActive && currentlyActive !== faqItem) {
+                        currentlyActive.classList.remove('active');
+                    }
+
+                    faqItem.classList.toggle('active');
+                });
+            });
+        }
+
+        renderFaq(faqData);
+
+    </script>
+</body>
+
+</html>
