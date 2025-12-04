@@ -1,0 +1,36 @@
+Transformers to Reasoning Models: How LLMs Evolved
+
+The progress in NLP over the last few years has been extraordinary. Each breakthrough hasn’t just improved performance — it has reshaped how we build and interact with AI systems.
+
+Here are some of the pivotal shifts that shaped today’s Large Language Models: 
+
+2017 — Attention Is All You Need
+The Transformer architecture changed everything by enabling parallel processing and efficient scaling. This became the foundation for all modern LLMs.
+
+2018 — BERT
+Introduced bidirectional context and made pretrain → fine-tune the new standard for NLP tasks.
+
+2020 — GPT-3 & Scaling Laws
+Showed that simply scaling model size unlocks surprising emergent capabilities, such as few-shot learning.
+
+2020 — T5 & Text-to-Text
+Unified NLP tasks under one generalized framework — making model usage simpler and more flexible.
+
+2020–2022 — RAG, LoRA & Instruction Tuning
+ • RAG combined retrieval with generation for better factual grounding
+ • LoRA made fine-tuning large models cost-efficient
+ • Instruction tuning made models understand and follow natural language instructions
+
+2022–2024 — Chain of Thought & Self-Consistency
+Prompting techniques enabled step-by-step reasoning and improved reliability on complex tasks.
+
+2025 — DeepSeek-R1 & Structured Reasoning
+A shift toward models that reason, not just autocomplete — paving the way for AI that can analyze, plan, and validate its own answers.
+
+
+Why this matters:
+We’re moving from language models → to reasoning models.
+The next wave of AI won’t just respond — it will think.
+
+If you are working in AI, ML, NLP, or Automation:
+This is the moment to deepen your understanding, refine your workflow, and prepare for what’s next.

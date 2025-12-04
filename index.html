@@ -13,10 +13,57 @@
 <body>
 
     <header class="hero">
-        <div class="hero-content">
-            <h1>Attention <span>is All You Need</span></h1>
-            <p>A comprehensive guide to the architecture that revolutionized Natural Language Processing. Built for
-                learners of all levels.</p>
+        <div class="hero-inner">
+            <!-- Left content -->
+            <div class="hero-left">
+                <div class="hero-badge">
+                    <span class="hero-badge-icon">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </span>
+                    <span class="hero-badge-text">Educational Resource</span>
+                </div>
+
+                <h1 class="hero-title">
+                    Attention
+                    <span>is All You Need</span>
+                </h1>
+
+                <p class="hero-subtitle">
+                    Master the Transformer architecture through comprehensive learning materials. Designed for students,
+                    researchers, and developers at every level.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="Intro_Transformers/index.html" target="_blank" class="btn hero-primary">
+                        Start Learning
+                        <span class="hero-primary-icon">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </span>
+                    </a>
+                    <a href="Paper_Versions/Old_Attention_Paper.pdf" target="_blank" class="btn hero-secondary">
+                        <i class="fa-regular fa-file-pdf"></i>
+                        Read Paper
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right illustration -->
+            <div class="hero-right">
+                <a href="LLM_Visualization/llm_viz.html" target="_blank" class="hero-card-link">
+                    <div class="hero-card">
+                        <div class="hero-card-header">
+                            <span class="hero-card-pill">
+                                <i class="fa-solid fa-book-open"></i>
+                                Learn
+                            </span>
+                        </div>
+                        <div class="hero-card-body">
+                            <img src="Transformer_Img/transformer.svg" alt="Transformer architecture diagram"
+                                class="hero-illustration">
+                        </div>
+                    </div>
+                </a>
+            </div>
         </div>
     </header>
 
@@ -90,6 +137,15 @@
                 <p>Explore the 3D structure of an LLM. A stunning visualization by bbycroft.net.</p>
             </a>
 
+            <!-- Option: Transformer Evolution -->
+            <a href="Transformers_Evolution/index.html" target="_blank" class="card">
+                <div class="card-icon">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <h2>Transformer Evolution</h2>
+                <p>Follow the journey from the original Transformer paper to modern reasoning-centric LLMs, with curated PDFs and resources.</p>
+            </a>
+
             <!-- Option 7: Paper Versions -->
             <div class="card" id="paper-versions-card">
                 <div class="card-icon">
@@ -120,6 +176,33 @@
             <button class="close-modal" id="close-modal">Close</button>
         </div>
     </div>
+
+    <!-- Owner Footer -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-left">
+                <div class="owner-avatar-wrapper">
+                    <img src="Owner_Profile/1713645692067.jpeg" alt="Website owner portrait" class="owner-avatar">
+                </div>
+                <div class="owner-text">
+                    <p class="owner-label">Created by</p>
+                    <h3 class="owner-name">Dr. Wasim Ahmad Khan</h3>
+                    <p class="owner-role">Website Owner & Curator</p>
+                    <a href="https://www.linkedin.com/in/wasimahmadkhan/" target="_blank" class="footer-linkedin-text">
+                        <i class="fa-brands fa-linkedin"></i>
+                        <span>Connect</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-right">
+                <p class="footer-meta-title">Attention is All You Need – Learning Hub</p>
+                <p class="footer-meta-subtitle">
+                    A single place to explore the original paper, math, visual explainers, and 3D views of Transformer-based LLMs.
+                </p>
+            </div>
+        </div>
+    </footer>
 
     <script src="js/script.js"></script>
 </body>
