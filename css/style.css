@@ -416,7 +416,7 @@ body {
 /* Cards */
 .card {
     background: var(--card-bg);
-    border-radius: var(--radius-lg);
+    border-radius: 10px;
     padding: 3rem;
     text-decoration: none;
     color: var(--text-main);
@@ -425,7 +425,7 @@ body {
     flex-direction: column;
     align-items: flex-start;
     border: 1px solid var(--card-border);
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
     height: 100%;
     position: relative;
     overflow: hidden;
