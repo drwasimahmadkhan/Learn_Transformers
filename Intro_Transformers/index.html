@@ -182,22 +182,54 @@
 
         /* --- RESPONSIVE: tablet & mobile only (laptop ≥1024px unchanged) --- */
         @media (max-width: 1023px) {
-            /* Contain layout so absolute slides can't cover the footer on real phones */
-            html,
-            body {
+            /*
+             * Real phones: 100vh / min-h-screen is taller than the visible area
+             * (browser chrome), so the footer gets pushed off-screen.
+             * 100dvh = visible dynamic viewport; footer stays in view.
+             */
+            html {
                 height: 100%;
-                overflow: hidden;
+                height: -webkit-fill-available;
+                height: 100dvh;
             }
 
-            .app-shell,
-            .app-main {
+            body {
+                height: 100% !important;
+                height: -webkit-fill-available !important;
+                height: 100dvh !important;
+                max-height: 100dvh !important;
+                min-height: 0 !important;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .app-shell {
+                flex: 1 1 0;
                 min-height: 0;
                 overflow: hidden;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .app-main {
+                flex: 1 1 0;
+                min-height: 0;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
             }
 
             #slide-container {
+                flex: 1 1 0;
                 min-height: 0;
                 overflow: hidden;
+            }
+
+            .footer-bar {
+                flex: 0 0 auto;
+                position: relative !important;
+                z-index: 100;
             }
 
             .slide {
@@ -428,12 +460,21 @@
                 align-items: center;
                 justify-content: space-between;
                 gap: 0.5rem;
-                padding: 0.6rem 0.75rem;
-                padding-bottom: calc(0.6rem + env(safe-area-inset-bottom, 0px));
-                /* Stay above absolute slides so real-device taps hit the buttons */
-                position: sticky !important;
+                width: 100%;
+                box-sizing: border-box;
+                /* Fixed to the visible screen so browser chrome can't hide it */
+                position: fixed !important;
+                left: 0;
+                right: 0;
                 bottom: 0;
                 z-index: 100;
+                padding: 0.6rem 0.75rem;
+                padding-bottom: calc(0.6rem + env(safe-area-inset-bottom, 0px));
+            }
+
+            /* Reserve space so slide content isn't hidden under the fixed footer */
+            .app-shell {
+                padding-bottom: calc(3.75rem + env(safe-area-inset-bottom, 0px));
             }
 
             #slideCounter {
