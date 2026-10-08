@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Transformer Architecture Visualization</title>
 
     <!-- Google Fonts: Inter for professional UI -->
@@ -113,6 +113,283 @@
             right: -2px;
             border-left: 0;
         }
+
+        /* Desktop: wrapper is layout-transparent */
+        .mobile-h-scroll {
+            display: contents;
+        }
+
+        .mobile-footer-bar {
+            display: none;
+        }
+
+        #mobilePrevBtn svg,
+        #mobileNextBtn svg {
+            pointer-events: none;
+        }
+
+        /* --- MOBILE ONLY (laptop ≥1024px untouched) --- */
+        @media (max-width: 1023px) {
+            #main-canvas {
+                overflow-x: hidden;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            /* Keep header + content fully visible; room above footer */
+            #main-canvas > .lg\:hidden {
+                position: relative;
+                z-index: 1;
+            }
+
+            #main-canvas .max-w-7xl {
+                padding: 1.25rem 1rem calc(6.5rem + env(safe-area-inset-bottom, 0px)) !important;
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+
+            #visualization-area {
+                width: 100%;
+                max-width: 100%;
+                overflow: visible;
+            }
+
+            /*
+             * h-full + justify-center clips content at the TOP when taller than
+             * the viewport. On mobile, let sections grow and start from the top.
+             */
+            #visualization-area .h-full {
+                height: auto !important;
+                min-height: 0 !important;
+            }
+
+            #visualization-area .flex.flex-col.justify-center,
+            #visualization-area .flex.flex-col.items-center.justify-center {
+                justify-content: flex-start !important;
+            }
+
+            /* Matrices: natural size (no squeeze / no overlapping cells) */
+            .math-bracket {
+                width: max-content;
+                max-width: none;
+                padding: 8px 12px;
+            }
+
+            .math-bracket > .grid {
+                width: max-content;
+            }
+
+            /* Horizontal strip: one scrollbar, start from the left, keep gaps */
+            .mobile-h-scroll {
+                display: block;
+                width: 100%;
+                max-width: 100%;
+                overflow-x: auto;
+                overflow-y: visible;
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior-x: contain;
+                scrollbar-width: thin;
+                scrollbar-color: #cbd5e1 #f1f5f9;
+                padding: 0.75rem 0.25rem 1rem;
+                margin: 0.25rem 0 1rem;
+            }
+
+            .mobile-h-scroll::-webkit-scrollbar {
+                height: 6px;
+            }
+
+            .mobile-h-scroll::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 4px;
+            }
+
+            .mobile-h-scroll > .flex {
+                width: max-content;
+                min-width: min(100%, max-content);
+                flex-wrap: nowrap !important;
+                justify-content: flex-start !important;
+                align-items: center;
+                gap: 1.25rem !important;
+            }
+
+            .mobile-h-scroll .flex.flex-col.group,
+            .mobile-h-scroll .flex.flex-col.shrink-0,
+            .mobile-h-scroll .bg-white,
+            .mobile-h-scroll .bg-slate-50 {
+                flex-shrink: 0;
+                overflow: visible !important;
+                max-width: none !important;
+            }
+
+            /*
+             * Standalone / stacked matrices (e.g. PE final X, encoder output):
+             * if wider than the screen, scroll that matrix — brackets stay with it.
+             */
+            #visualization-area .flex.flex-col.group.shrink-0 {
+                max-width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 0.35rem;
+                scrollbar-width: thin;
+            }
+
+            .mobile-h-scroll .flex.flex-col.group.shrink-0 {
+                overflow: visible !important;
+                max-width: none !important;
+                padding-bottom: 0 !important;
+            }
+
+            /* Built-in scroll areas (PE / FFN) */
+            #visualization-area .matrix-scroll,
+            #visualization-area .overflow-x-auto {
+                overflow-x: auto !important;
+                width: 100%;
+                max-width: 100%;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 0.75rem;
+                margin-bottom: 0.5rem;
+            }
+
+            /* PE cards were shrinking (flex-shrink:1) and overlapping — keep full size */
+            #visualization-area .matrix-scroll > *,
+            #visualization-area .overflow-x-auto > .min-w-\[400px\],
+            #visualization-area .matrix-scroll > .min-w-\[400px\] {
+                flex-shrink: 0 !important;
+            }
+
+            #visualization-area .matrix-scroll > .flex,
+            #visualization-area .overflow-x-auto > .flex,
+            #visualization-area .matrix-scroll .min-w-max,
+            #visualization-area .overflow-x-auto .min-w-max {
+                gap: 1.25rem !important;
+                flex-shrink: 0 !important;
+                width: max-content;
+                min-width: max-content;
+            }
+
+            /* PE calculation cards: keep readable width; scroll inside if formula is wide */
+            #visualization-area .min-w-\[400px\] {
+                min-width: 340px !important;
+                max-width: none !important;
+                flex-shrink: 0 !important;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                margin-right: 0.25rem;
+            }
+
+            #visualization-area .min-w-\[400px\] .grid {
+                min-width: max-content;
+            }
+
+            #visualization-area .min-w-\[400px\] .whitespace-nowrap {
+                font-size: 0.75rem;
+            }
+
+            /* Cards with overflow-hidden were clipping answer-matrix brackets */
+            #visualization-area .overflow-hidden:has(.math-bracket) {
+                overflow-x: auto !important;
+                overflow-y: visible !important;
+            }
+
+            /* Breathing room between stacked sections */
+            #visualization-area .space-y-10 > :not([hidden]) ~ :not([hidden]),
+            #visualization-area .space-y-12 > :not([hidden]) ~ :not([hidden]) {
+                margin-top: 2rem !important;
+            }
+
+            #visualization-area .gap-8 {
+                gap: 1.5rem !important;
+            }
+
+            #visualization-area .gap-10,
+            #visualization-area .gap-12 {
+                gap: 1.75rem !important;
+            }
+
+            /*
+             * Token-only flex-wrap rows still wrap.
+             * Matrix formula rows (Raw→Scaled, QKV answer matrices) are handled by
+             * setupMobileScrollers → .mobile-h-scroll (see JS).
+             */
+            #visualization-area .flex-wrap:not(:has(.math-bracket)) {
+                flex-wrap: wrap !important;
+                justify-content: center !important;
+                gap: 1.25rem !important;
+                overflow: visible !important;
+                width: 100%;
+            }
+
+            #visualization-area .text-5xl {
+                font-size: 1.75rem !important;
+                line-height: 1.2 !important;
+            }
+
+            #visualization-area .px-12 {
+                padding-left: 1.5rem !important;
+                padding-right: 1.5rem !important;
+            }
+
+            /* Footer already shows the step — hide duplicate in header */
+            .header-step-counter {
+                display: none !important;
+            }
+
+            .mobile-footer-bar {
+                display: flex !important;
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 50;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.5rem;
+                padding: 0.65rem 0.75rem;
+                padding-bottom: calc(0.65rem + env(safe-area-inset-bottom, 0px));
+                background: #fff;
+                border-top: 1px solid #e2e8f0;
+                box-shadow: 0 -4px 12px -4px rgba(0, 0, 0, 0.08);
+            }
+
+            #mobilePrevBtn,
+            #mobileNextBtn {
+                flex-shrink: 0;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 2.75rem;
+                min-height: 2.75rem;
+                padding: 0.55rem;
+                border-radius: 0.5rem;
+                background: #4f46e5;
+                color: #fff;
+                border: none;
+                cursor: pointer;
+                touch-action: manipulation;
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            #mobilePrevBtn:disabled,
+            #mobileNextBtn:disabled {
+                opacity: 0.45;
+                cursor: not-allowed;
+            }
+
+            #mobilePrevBtn:hover:not(:disabled),
+            #mobileNextBtn:hover:not(:disabled) {
+                background: #4338ca;
+            }
+
+            #mobileSlideCounter {
+                flex: 1;
+                text-align: center;
+                font-size: 0.8rem;
+                font-weight: 600;
+                color: #475569;
+                font-family: 'JetBrains Mono', monospace;
+                white-space: nowrap;
+            }
+        }
     </style>
 </head>
 
@@ -146,7 +423,7 @@
 
         <div class="flex items-center gap-3">
             <div class="text-sm font-bold text-brand-600 animate-pulse hidden lg:block mr-2">Use Arrow Keys ← →</div>
-            <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-md text-sm font-mono border border-slate-200">
+            <span class="header-step-counter bg-slate-100 text-slate-600 px-3 py-1 rounded-md text-sm font-mono border border-slate-200">
                 Step <span id="step-count" class="font-bold text-slate-900">1</span>/<span id="total-steps"></span>
             </span>
         </div>
@@ -235,6 +512,23 @@
 
     </main>
 
+    <!-- Mobile-only footer navigation (hidden on laptop via CSS) -->
+    <div class="mobile-footer-bar" aria-label="Slide navigation">
+        <button id="mobilePrevBtn" type="button" aria-label="Previous step">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" class="w-5 h-5" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+        </button>
+        <div id="mobileSlideCounter">Step 1 / 15</div>
+        <button id="mobileNextBtn" type="button" aria-label="Next step">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" class="w-5 h-5" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+        </button>
+    </div>
+
     <!-- LOGIC SCRIPT -->
     <script>
         // --- MATH UTILS ---
@@ -309,10 +603,13 @@
         const MatrixDisplay = ({ title, matrix, rowLabels, colLabels, small = false, highlightColor = 'bg-brand-50', overrideValue }) => {
             if (!matrix) return '';
 
-            const gridCols = `auto repeat(${matrix[0].length}, minmax(0, 1fr))`;
+            // Fixed tracks match w-12 / w-20 cells so values never collapse/overlap.
+            // Looks the same on laptop; prevents squeeze on mobile.
+            const track = small ? '3rem' : '5rem';
+            const gridCols = `minmax(2.75rem, max-content) repeat(${matrix[0].length}, ${track})`;
 
             let html = `
-                <div class="flex flex-col items-center group">
+                <div class="flex flex-col items-center group shrink-0">
                     <h4 class="font-semibold text-slate-500 mb-2 text-sm tracking-wide uppercase flex items-center gap-2">
                         ${title ? `<span class="bg-white px-3 py-1 rounded shadow-sm border border-slate-200">${title}</span>` : ''}
                     </h4>
@@ -898,20 +1195,23 @@
                         rowsHtml += `
                             <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 mb-6">
                                 <h5 class="font-bold text-slate-700 mb-4 text-sm uppercase">Token: "${token}"</h5>
-                                <div class="flex items-center gap-4 overflow-x-auto pb-4 min-w-max matrix-scroll">
-                                    <div class="text-xs border border-slate-200 p-3 bg-slate-50 rounded font-mono text-slate-500">Input<br/><strong class="text-slate-800 text-sm">${vec2Str(state.data.norm1[i])}</strong></div>
+                                <!-- Slide 8 fix: overflow on outer wrapper, min-w-max on inner row (all viewports) -->
+                                <div class="overflow-x-auto pb-4 matrix-scroll w-full">
+                                <div class="flex items-center gap-4 min-w-max">
+                                    <div class="text-xs border border-slate-200 p-3 bg-slate-50 rounded font-mono text-slate-500 shrink-0">Input<br/><strong class="text-slate-800 text-sm">${vec2Str(state.data.norm1[i])}</strong></div>
                                     ${arrowRight}
-                                    <div class="text-xs border border-red-100 p-3 bg-red-50 rounded font-mono text-red-800">x·W1<br/><strong class="text-sm">${vec2Str(state.data.linear1_pre_bias[i])}</strong></div>
+                                    <div class="text-xs border border-red-100 p-3 bg-red-50 rounded font-mono text-red-800 shrink-0">x·W1<br/><strong class="text-sm">${vec2Str(state.data.linear1_pre_bias[i])}</strong></div>
                                     ${plusSign}
-                                    <div class="text-xs border border-pink-100 p-3 bg-pink-50 rounded font-mono text-pink-800">b1<br/><span class="text-sm">${vec2Str(state.data.B_1)}</span></div>
+                                    <div class="text-xs border border-pink-100 p-3 bg-pink-50 rounded font-mono text-pink-800 shrink-0">b1<br/><span class="text-sm">${vec2Str(state.data.B_1)}</span></div>
                                     ${arrowRight}
-                                    <div class="text-xs border border-green-100 p-3 bg-green-50 rounded font-mono text-green-800">ReLU<br/><strong class="text-sm">${vec2Str(state.data.ff_hidden[i])}</strong></div>
+                                    <div class="text-xs border border-green-100 p-3 bg-green-50 rounded font-mono text-green-800 shrink-0">ReLU<br/><strong class="text-sm">${vec2Str(state.data.ff_hidden[i])}</strong></div>
                                     ${arrowRight}
-                                    <div class="text-xs border border-blue-100 p-3 bg-blue-50 rounded font-mono text-blue-800">Hid·W2<br/><strong class="text-sm">${vec2Str(state.data.ff_output_pre_bias[i])}</strong></div>
+                                    <div class="text-xs border border-blue-100 p-3 bg-blue-50 rounded font-mono text-blue-800 shrink-0">Hid·W2<br/><strong class="text-sm">${vec2Str(state.data.ff_output_pre_bias[i])}</strong></div>
                                     ${plusSign}
-                                    <div class="text-xs border border-pink-100 p-3 bg-pink-50 rounded font-mono text-pink-800">b2<br/><span class="text-sm">${vec2Str(state.data.B_2)}</span></div>
+                                    <div class="text-xs border border-pink-100 p-3 bg-pink-50 rounded font-mono text-pink-800 shrink-0">b2<br/><span class="text-sm">${vec2Str(state.data.B_2)}</span></div>
                                     ${equalSign}
-                                    <div class="text-xs border border-brand-200 p-3 bg-brand-100 font-bold rounded font-mono text-brand-900">Final<br/><span class="text-sm">${vec2Str(state.data.ff_output[i])}</span></div>
+                                    <div class="text-xs border border-brand-200 p-3 bg-brand-100 font-bold rounded font-mono text-brand-900 shrink-0">Final<br/><span class="text-sm">${vec2Str(state.data.ff_output[i])}</span></div>
+                                </div>
                                 </div>
                             </div>
                         `;
@@ -1195,6 +1495,13 @@
             document.getElementById('progress-bar').style.width = `${((state.step + 1) / steps.length) * 100}%`;
             document.getElementById('nav-phase-label').innerText = config.phase;
 
+            const mobileCounter = document.getElementById('mobileSlideCounter');
+            const mobilePrev = document.getElementById('mobilePrevBtn');
+            const mobileNext = document.getElementById('mobileNextBtn');
+            if (mobileCounter) mobileCounter.textContent = `Step ${state.step + 1} / ${steps.length}`;
+            if (mobilePrev) mobilePrev.disabled = state.step === 0;
+            if (mobileNext) mobileNext.disabled = state.step === steps.length - 1;
+
             // 2. Update Sidebar (Desktop)
             document.getElementById('sidebar-phase').innerText = config.phase;
             document.getElementById('sidebar-title').innerText = config.title;
@@ -1242,6 +1549,49 @@
 
             // 5. Initialize Icons
             lucide.createIcons();
+
+            // 6. Mobile: wrap wide matrix rows so they scroll without squeezing
+            setupMobileScrollers();
+        }
+
+        // Wrap horizontal rows that contain matrices (mobile only).
+        // Laptop: .mobile-h-scroll uses display:contents — layout unchanged.
+        // Includes flex-wrap formula rows (Scaled Embeddings / Q·K·V answers) so the
+        // result matrix stays reachable with brackets intact.
+        function setupMobileScrollers() {
+            const area = document.getElementById('visualization-area');
+            if (!area) return;
+
+            const candidates = Array.from(area.querySelectorAll('.flex')).filter((el) => {
+                if (el.classList.contains('flex-col')) return false;
+                // Skip wrap rows that have no matrices (e.g. token ID cards)
+                if (el.classList.contains('flex-wrap') && !el.querySelector('.math-bracket')) return false;
+                if (el.closest('.mobile-h-scroll')) return false;
+                if (el.classList.contains('matrix-scroll') || el.closest('.matrix-scroll')) return false;
+                if (el.classList.contains('overflow-x-auto') || el.closest('.overflow-x-auto')) return false;
+                if (!el.querySelector('.math-bracket')) return false;
+                return true;
+            });
+
+            // Only wrap outermost rows (avoid nested double-scroll)
+            const outermost = candidates.filter(
+                (el) => !candidates.some((other) => other !== el && other.contains(el))
+            );
+
+            outermost.forEach((el) => {
+                const wrap = document.createElement('div');
+                wrap.className = 'mobile-h-scroll';
+                el.parentNode.insertBefore(wrap, el);
+                wrap.appendChild(el);
+            });
+        }
+
+        // --- NAVIGATION HELPERS ---
+        function goToStep(n) {
+            const max = getStepConfig().length - 1;
+            if (n < 0 || n > max) return;
+            state.step = n;
+            render();
         }
 
         // --- KEYBOARD NAVIGATION ---
@@ -1255,6 +1605,10 @@
                 render();
             }
         });
+
+        // --- MOBILE FOOTER BUTTONS ---
+        document.getElementById('mobilePrevBtn').addEventListener('click', () => goToStep(state.step - 1));
+        document.getElementById('mobileNextBtn').addEventListener('click', () => goToStep(state.step + 1));
 
         // --- STARTUP ---
         // Ensure scripts are loaded before starting
