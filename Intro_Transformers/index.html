@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Transformer</title>
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -58,9 +58,29 @@
             /* Brings active slide to the front */
         }
 
-        /* Style for the fixed footer bar */
+        /* Style for the fixed footer bar — must sit above slides for real-device taps */
         .footer-bar {
+            position: relative;
+            z-index: 100;
+            flex-shrink: 0;
             box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05), 0 -2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        #prevBtn,
+        #nextBtn,
+        #archBtn {
+            position: relative;
+            z-index: 1;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+        }
+
+        /* SVGs must not steal taps from the button on iOS */
+        #prevBtn svg,
+        #nextBtn svg,
+        #archBtn svg {
+            pointer-events: none;
         }
 
         .dark .footer-bar {
@@ -162,6 +182,24 @@
 
         /* --- RESPONSIVE: tablet & mobile only (laptop ≥1024px unchanged) --- */
         @media (max-width: 1023px) {
+            /* Contain layout so absolute slides can't cover the footer on real phones */
+            html,
+            body {
+                height: 100%;
+                overflow: hidden;
+            }
+
+            .app-shell,
+            .app-main {
+                min-height: 0;
+                overflow: hidden;
+            }
+
+            #slide-container {
+                min-height: 0;
+                overflow: hidden;
+            }
+
             .slide {
                 padding: 2rem 1.5rem;
                 justify-content: flex-start;
@@ -391,6 +429,11 @@
                 justify-content: space-between;
                 gap: 0.5rem;
                 padding: 0.6rem 0.75rem;
+                padding-bottom: calc(0.6rem + env(safe-area-inset-bottom, 0px));
+                /* Stay above absolute slides so real-device taps hit the buttons */
+                position: sticky !important;
+                bottom: 0;
+                z-index: 100;
             }
 
             #slideCounter {
@@ -459,9 +502,9 @@
 <body class="bg-gray-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
 
     <!-- Main slide content area, flex-1 makes it grow to fill available space -->
-    <div class="w-full flex-1 flex flex-col">
+    <div class="app-shell w-full flex-1 flex flex-col">
         <!-- Added light and dark mode classes for main container -->
-        <div class="bg-white dark:bg-slate-800 flex-1 flex flex-col justify-between">
+        <div class="app-main bg-white dark:bg-slate-800 flex-1 flex flex-col justify-between">
 
             <div id="slide-container">
 
