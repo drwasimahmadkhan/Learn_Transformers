@@ -9,6 +9,152 @@
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Mobile / tablet layout only — laptop & content unchanged */
+        @media (max-width: 1023px) {
+            body {
+                overflow-x: hidden;
+            }
+
+            .hero {
+                padding: 2.5rem 1.25rem 2rem;
+            }
+
+            .hero-inner {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .hero-right {
+                order: -1;
+                width: 100%;
+            }
+
+            .hero-card {
+                max-width: 100%;
+                margin: 0 auto;
+                padding: 1.15rem 1.15rem 1.35rem;
+            }
+
+            .hero-illustration {
+                max-width: 100%;
+                max-height: 240px;
+            }
+
+            .hero-title {
+                font-size: clamp(2rem, 8vw, 2.75rem);
+                margin-bottom: 1rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+                max-width: 100%;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.75rem;
+                margin-top: 1.5rem;
+            }
+
+            .hero-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .container {
+                padding: 0 1.25rem 3.5rem;
+            }
+
+            .options-grid {
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
+                padding: 0;
+            }
+
+            .card {
+                padding: 1.5rem 1.35rem;
+            }
+
+            .card-icon {
+                width: 56px;
+                height: 56px;
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .card h2 {
+                font-size: 1.35rem;
+                margin-bottom: 0.65rem;
+            }
+
+            .card p {
+                font-size: 0.95rem;
+                line-height: 1.55;
+            }
+
+            .site-footer {
+                padding: 1.75rem 1.25rem 2rem;
+            }
+
+            .footer-inner {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
+            }
+
+            .footer-left {
+                width: 100%;
+            }
+
+            .footer-right {
+                max-width: 100%;
+                text-align: left;
+            }
+
+            .footer-meta-subtitle {
+                font-size: 0.9rem;
+            }
+
+            .modal {
+                width: calc(100% - 2rem);
+                max-width: 420px;
+                padding: 1.75rem 1.35rem;
+                margin: 1rem;
+            }
+
+            .modal h2 {
+                font-size: 1.25rem;
+                margin-bottom: 1.25rem;
+            }
+
+            .modal-options .btn {
+                padding: 0.85rem 1.25rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-badge-text {
+                font-size: 0.8rem;
+            }
+
+            .hero-title {
+                font-size: 1.85rem;
+                letter-spacing: -0.03em;
+            }
+
+            .owner-avatar-wrapper {
+                width: 56px;
+                height: 56px;
+            }
+
+            .owner-name {
+                font-size: 1rem;
+            }
+        }
+    </style>
 </head>
 
 <body>
